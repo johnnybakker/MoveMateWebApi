@@ -28,11 +28,8 @@ jobs:
       - name: Install dependencies
         run: dotnet restore
       
-      - name: Build
-        run: dotnet build -c Release --no-restore
-
       - name: Publish
-        run: dotnet publish -c Release -o release --self-contained --no-restore
+        run: dotnet publish -c Release -o release --runtime linux-arm64 --self-contained --no-restore
       
       - name: Stopping service
         run:  sudo /bin/systemctl stop movemate
