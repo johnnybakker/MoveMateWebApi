@@ -10,26 +10,35 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup .NET Core SDK 7.0.x
-        uses: actions/setup-dotnet@v1.7.2
-        with:
-          dotnet-version: 7.0.x
-      - name: Install dependencies
-        run: dotnet restore
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+      - name: Checkout
+        uses: actions/checkout@v2
+      
       - name: Substitute Secrets
         uses: Lambdaspire/action-substitute-secrets-in-file@v1.0.0
         with:
           file: appsettings.json
           tokenPattern: ${TOKEN}
           secretsJson: ${{ toJSON(secrets) }}
+      
+      - name: Setup .NET Core SDK 7.0.x
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: 7.0.x
+      
+      - name: Install dependencies
+        run: dotnet restore
+      
+      - name: Publish
+        run: dotnet publish -c Release -o release --self-contained --no-restore
+      
       - name: Stopping service
         run:  sudo /bin/systemctl stop movemate
+
       - name: Clean directory
         run:  rm -f /var/www/MoveMateWebApi/*
-      - name: Publish
-        run: dotnet publish -c Release -o /var/www/MoveMateWebApi --self-contained
+
+      - name: Install
+        run:  mv -v release/* /var/www/MoveMateWebApi/
+
       - name: Starting service
         run:  sudo /bin/systemctl start movemate
