@@ -21,6 +21,8 @@ jobs:
         run: dotnet build --configuration Release --no-restore
       - name: Stopping service
         run:  sudo /bin/systemctl stop movemate
+      - name: Clean directory
+        run:  rm /var/www/MoveMateWebApi/*
       - name: Publish
         run: dotnet publish -c Release -o /var/www/MoveMateWebApi --self-contained
       - name: Starting service
