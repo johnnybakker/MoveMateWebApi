@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MoveMateWebApi.Database;
 using MoveMateWebApi.Models;
 
 namespace MoveMateWebApi.Controllers;
@@ -7,17 +8,16 @@ namespace MoveMateWebApi.Controllers;
 [Route("[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly ILogger<UserController> _logger;
-
-    public UserController(ILogger<UserController> logger)
+	protected readonly MoveMateDbContext _dbContext;
+	
+    public UserController(MoveMateDbContext dbContext)
     {
-        _logger = logger;
+		_dbContext = dbContext;
     }
 
     [HttpGet]
     public IEnumerable<User> Get()
     {
-		_logger.LogInformation("Requesting Users");
-        return Array.Empty<User>();
+		return _dbContext.Users.ToList();
     }
 }
