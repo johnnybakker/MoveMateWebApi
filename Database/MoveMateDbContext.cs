@@ -5,10 +5,18 @@ namespace MoveMateWebApi.Database;
 
 public class MoveMateDbContext : DbContext
 {
-    public MoveMateDbContext(DbContextOptions<MoveMateDbContext> options) : base(options)
-    {
+	private readonly IConfiguration _configuration;
 
+    public MoveMateDbContext(IConfiguration configuration, DbContextOptions<MoveMateDbContext> options) : base(options)
+    {
+		_configuration = configuration;
     }
 
-    public virtual DbSet<User> Users { get; set; }
+	protected override void OnConfiguring(DbContextOptionsBuilder builder)
+	{
+		var connectionString = _configuration.GetConnectionString("DefaultConnection");
+		builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+	}
+
+	public virtual DbSet<User> Users { get; set; }
 }

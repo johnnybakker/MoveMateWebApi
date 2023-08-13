@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MoveMateWebApi.Models;
 
@@ -13,4 +14,7 @@ public class User {
 	
 	[MaxLength(255), Required]
 	public string Email { get; set; } = string.Empty;
+
+	[MaxLength(32), Required, JsonIgnore]
+	public string Password { get; set; } = string.Empty;
 }

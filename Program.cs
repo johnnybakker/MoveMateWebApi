@@ -1,4 +1,7 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MoveMateWebApi.Database;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,12 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<MoveMateDbContext>();
 
-builder.Services.AddDbContext<MoveMateDbContext>(options => {
-	var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-	options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-});
+// Configure authentication
+var authentication = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
+authentication.AddJwtBearer(ConfigureJwtBearer);
 
+// Build the application
 var app = builder.Build();
 
 // Migrate latest database changes during startup
@@ -33,3 +37,21 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
+void ConfigureJwtBearer(JwtBearerOptions options) {
+	string privateKey = builder.Configuration["Jwt:PrivateKey"] ?? string.Empty;
+	SymmetricSecurityKey ssk = new(Encoding.UTF8.GetBytes(privateKey));
+
+	options.IncludeErrorDetails = builder.Environment.IsDevelopment();
+	options.TokenValidationParameters = new()
+	{
+		IssuerSigningKey = ssk,
+		RequireExpirationTime = true,
+		ValidateLifetime = true,
+		ValidateIssuer = true,
+		ValidateAudience = true,
+		ValidIssuer = builder.Configuration["Jwt:Issuer"],
+		ValidAudience = builder.Configuration["Jwt:Issuer"]
+	};
+}
