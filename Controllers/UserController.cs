@@ -81,6 +81,7 @@ public class UserController : ControllerBase
 	}
 
 	private string? LogInWithDto(LogInDto dto) {
+			Console.WriteLine(dto.Email);
 		string hashedPassword = dto.Password?.ToSHA256HashedString() ?? string.Empty;
 		User? user = _dbContext.Users
 			.Where(u => u.Email == dto.Email && u.Password == hashedPassword)
