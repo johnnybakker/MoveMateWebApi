@@ -29,6 +29,17 @@ public class UserController : ControllerBase
     {
 		return _dbContext.Users.ToList();
     }
+
+
+	[HttpGet("[action]"), AllowAnonymous]
+    public IEnumerable<User> Search(
+		[FromQuery(Name = "username")] 
+		string username
+	){
+		return _dbContext.Users
+			.Where(u => u.Name.ToLower().Contains(username.ToLower()))
+			.OrderByDescending(u => u.Name.ToLower().StartsWith(username.ToLower()));
+    }
 	
 	[HttpPost("[action]"), AllowAnonymous]
 	public async Task<string?> SignUp(SignUpDto dto) {
