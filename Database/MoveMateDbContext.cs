@@ -20,17 +20,21 @@ public class MoveMateDbContext : DbContext
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
-		base.OnModelCreating(modelBuilder);
+		//base.OnModelCreating(modelBuilder);
 
-		modelBuilder.Entity<User>()
-			.HasMany(u=> u.Subscriptions)
-			.WithOne(s => s.User)
-			.IsRequired();
+		modelBuilder.Entity<Subscription>()
+			.HasOne(u=> u.User)
+			.WithMany(e => e.Subscriptions)
+			.HasForeignKey(e => e.UserId)
+			.IsRequired()
+			.OnDelete(DeleteBehavior.Cascade);
 
-		modelBuilder.Entity<User>()
-			.HasMany(e => e.Subscribers)
-			.WithOne(e => e.ToUser)
-			.IsRequired();
+		modelBuilder.Entity<Subscription>()
+			.HasOne(e => e.ToUser)
+			.WithMany(e => e.Subscribers)
+			.HasForeignKey(e => e.ToUserId)
+			.IsRequired()
+			.OnDelete(DeleteBehavior.Cascade);
 	}
 
 	public virtual DbSet<User> Users { get; set; }

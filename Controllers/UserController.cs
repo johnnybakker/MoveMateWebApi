@@ -7,6 +7,9 @@ using MoveMateWebApi.Models;
 using MoveMateWebApi.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using System.Collections;
+using System.Text.Json.Nodes;
+using Microsoft.EntityFrameworkCore;
 
 namespace MoveMateWebApi.Controllers;
 
@@ -27,7 +30,39 @@ public class UserController : ControllerBase
     [HttpGet]
     public IEnumerable<User> Get()
     {
-		return _dbContext.Users.ToList();
+		return _dbContext.Users
+			.Include(u => u.Subscribers)
+			.Include(u => u.Subscriptions);
+    }
+
+	[HttpPost("[action]")]
+    async public Task<string> Subscribe(JsonObject body)
+    {
+		int? id = body["id"]?.GetValue<int>();
+		if(id == null) return "Id is not provided";
+
+		int myUserId = User.GetUserId();
+		var user = await _dbContext.Users.FindAsync(myUserId);
+
+		if(user == null) {
+			return $"User with id {myUserId} does not exist";
+		}
+
+		var toUser = await _dbContext.Users.FindAsync(id);
+		if(toUser == null) {
+			return $"User with id {id} does not exist";
+		}
+
+		await _dbContext.Subscription.AddAsync(
+			new() {
+				IsFavorite = false,
+				ToUser = toUser,
+				User = user
+			}
+		);
+
+		await _dbContext.SaveChangesAsync();
+		return $"{myUserId} is now subscribed to ${id}";
     }
 
 

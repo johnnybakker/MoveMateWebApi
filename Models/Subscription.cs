@@ -12,7 +12,13 @@ public class Subscription {
 	public User User { get; set; } = null!;
 
 	[Required]
+	public int UserId { get; set; } = default;
+
+	[Required]
 	public User ToUser { get; set; } = null!;
+	[Required]
+	public int ToUserId { get; set; } = default;
+
 
 	[Required]
 	public bool IsFavorite { get; set; } = false;
