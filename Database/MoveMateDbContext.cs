@@ -1,11 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using MoveMateWebApi.Models;
+using MoveMateWebApi.Repositories;
 
 namespace MoveMateWebApi.Database;
 
 public class MoveMateDbContext : DbContext
 {
 	private readonly IConfiguration _configuration;
+
+	public virtual DbSet<User> Users { get; set; }
+	public virtual DbSet<Session> Sessions { get; set; }
+	public virtual DbSet<Subscription> Subscription { get; set; }
 
     public MoveMateDbContext(IConfiguration configuration, DbContextOptions<MoveMateDbContext> options) : base(options)
     {
@@ -20,8 +25,6 @@ public class MoveMateDbContext : DbContext
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
-		//base.OnModelCreating(modelBuilder);
-
 		modelBuilder.Entity<Subscription>()
 			.HasOne(u=> u.User)
 			.WithMany(e => e.Subscriptions)
@@ -35,8 +38,34 @@ public class MoveMateDbContext : DbContext
 			.HasForeignKey(e => e.ToUserId)
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Cascade);
+
+		modelBuilder.Entity<Session>()
+			.HasQueryFilter(e => e.Expired == false)
+			.HasOne(e => e.User)
+			.WithMany(e => e.Sessions)
+			.HasForeignKey(e => e.UserId)
+			.IsRequired()
+			.OnDelete(DeleteBehavior.Cascade);
 	}
 
-	public virtual DbSet<User> Users { get; set; }
-	public virtual DbSet<Subscription> Subscription { get; set; }
+
+
+	public void ExpireSession(Session session) {
+
+	}
+
+	public UserRepository GetUserRepository()
+	{
+		throw new NotImplementedException();
+	}
+
+	public SessionRepository GetSessionRepository()
+	{
+		throw new NotImplementedException();
+	}
+
+	public void AsyncSaveChanges()
+	{
+		throw new NotImplementedException();
+	}
 }

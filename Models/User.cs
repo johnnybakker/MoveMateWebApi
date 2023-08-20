@@ -32,4 +32,10 @@ public class User {
 	[JsonPropertyName("subscribers")]
 	public ICollection<int> SubscriberIds => Subscribers.Select(x => x.UserId).ToList();
 
+	[Required, JsonIgnore]	
+	public List<Session> Sessions { get; } = new List<Session>();
+
+	[JsonPropertyName("sessions")]
+	public ICollection<int> SessionIds => Sessions.Select(x => x.Id).ToList();
+
 }

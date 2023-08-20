@@ -1,20 +1,24 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using MoveMateWebApi.Database;
+using MoveMateWebApi.Middleware;
+using MoveMateWebApi.Repositories;
+using MoveMateWebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<MoveMateDbContext>();
 
-// Configure authentication
-var authentication = builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
-authentication.AddJwtBearer(ConfigureJwtBearer);
+builder.Services.AddSingleton<ITokenFactory, JwtTokenFactory>();
+builder.Services.AddDbContext<MoveMateDbContext>();
+builder.Services.AddScoped<SessionRepository>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
+builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 
 // Build the application
 var app = builder.Build();
@@ -38,20 +42,3 @@ app.MapControllers();
 
 app.Run();
 
-
-void ConfigureJwtBearer(JwtBearerOptions options) {
-	string privateKey = builder.Configuration["Jwt:PrivateKey"] ?? string.Empty;
-	SymmetricSecurityKey ssk = new(Encoding.UTF8.GetBytes(privateKey));
-
-	options.IncludeErrorDetails = builder.Environment.IsDevelopment();
-	options.TokenValidationParameters = new()
-	{
-		IssuerSigningKey = ssk,
-		RequireExpirationTime = true,
-		ValidateLifetime = true,
-		ValidateIssuer = true,
-		ValidateAudience = true,
-		ValidIssuer = builder.Configuration["Jwt:Issuer"],
-		ValidAudience = builder.Configuration["Jwt:Issuer"]
-	};
-}
