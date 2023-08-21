@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using MoveMateWebApi.Models;
 using System.Text.Json.Nodes;
 using MoveMateWebApi.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using MoveMateWebApi.Models.Data;
+using MoveMateWebApi.Models;
+using MoveMateWebApi.Models.Dto;
 
 namespace MoveMateWebApi.Controllers;
 
@@ -16,55 +18,46 @@ public class UserController : ApiController
 		_repository = userRepository;
     }
 
-	[HttpGet("[action]"), AllowAnonymous]
-    public string Test()
-    {
-		return  "Hello";
-    }
-
-
     [HttpGet]
-    public IEnumerable<User> Get()
-    {
-		return _repository.GetAll();
-    }
+    public ApiResult Get() {
+		return ApiResult.Success(_repository.GetAll());
+	}
 
 	[HttpPost("[action]")]
-    async public Task Subscribe(JsonObject body)
+    async public Task<ApiResult> Subscribe(JsonObject body)
     {
-		int subscriberId = Session?.UserId ?? -1;
+		int subscriberId = CurrentSession?.UserId ?? -1;
 		int subscriptionId = body["id"]?.GetValue<int>() ?? -1;
-		await _repository.Subscribe(subscriberId, subscriptionId);
+		bool result = await _repository.Subscribe(subscriberId, subscriptionId);
+
+		return result ? ApiResult.Success(subscriptionId) : ApiResult.Failed();
     }
 
 
 	[HttpGet("[action]"), AllowAnonymous]
-    public IEnumerable<User> Search([FromQuery(Name = "username")] string username){
-		return _repository.Search(username);
+    public ApiResult Search([FromQuery(Name = "username")] string username){
+		return ApiResult.Success(_repository.Search(username));
     }
 	
 	[HttpPost("[action]"), AllowAnonymous]
-	public async Task<string?> SignUp(SignUpDto dto) {
-		return await _repository.SignUp(dto);
+	public async Task<ApiResult> SignUp(SignUpRequest request) {
+		SignUpResult result = await _repository.SignUp(request);
+		return result.IsValid ? ApiResult.Success() : ApiResult.Failed(result);
 	}
 
 	[HttpPost("[action]"), AllowAnonymous]
-	public async Task<string?> Login(LogInDto? dto)
+	public async Task<ApiResult> Login(LoginRequest? request)
 	{
-			Console.WriteLine("Login");
+		LoginResult? result;
 
-		if(dto != null) {
-			Console.WriteLine("Login using dto");
-
-			return await _repository
-				.LoginUsingEmailAndPassword(dto.Email ?? "", dto.Password ?? "");
+		if(request != null) {
+			result = await _repository.LoginUsingRequest(request);
+		} else if(CurrentSession != null) {
+			result = await _repository.LoginUsingSession(CurrentSession);
+		} else {
+			result = null;
 		}
 
-		if(Session != null) {
-			return await _repository
-				.LoginUsingSession(Session);
-		}
-
-		return null;
+		return result == null ? ApiResult.Failed() : ApiResult.Success(result);
 	}
 }

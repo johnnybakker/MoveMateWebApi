@@ -1,7 +1,7 @@
-
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using MoveMateWebApi.Models;
+
+namespace MoveMateWebApi.Models.Data;
 
 public class Subscription {
 	

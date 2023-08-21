@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using MoveMateWebApi.Models.Data;
 using MoveMateWebApi.Repositories;
 
 namespace MoveMateWebApi.Middleware;
@@ -44,17 +45,12 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
 		};
 	}
 
-	private async Task OnTokenValidated(TokenValidatedContext context) {
-	
-		Console.WriteLine("Token validated");
-		
+	private async Task OnTokenValidated(TokenValidatedContext context) {	
 		if(await AttachSession(context) == false)
 			context.Fail("Failed to attach session");
 	}
 
-	private async Task<bool> AttachSession(TokenValidatedContext context) {
-		Console.WriteLine("Attaching session");
-		
+	private async Task<bool> AttachSession(TokenValidatedContext context) {		
 		if(context.Principal == null) return false;
 		
 		var sessionId = GetSessionId(context.Principal) ?? -1;

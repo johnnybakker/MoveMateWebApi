@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using MoveMateWebApi.Models;
+using MoveMateWebApi.Models.Data;
 using MoveMateWebApi.Repositories;
 
 namespace MoveMateWebApi.Database;
@@ -46,26 +46,5 @@ public class MoveMateDbContext : DbContext
 			.HasForeignKey(e => e.UserId)
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Cascade);
-	}
-
-
-
-	public void ExpireSession(Session session) {
-
-	}
-
-	public UserRepository GetUserRepository()
-	{
-		throw new NotImplementedException();
-	}
-
-	public SessionRepository GetSessionRepository()
-	{
-		throw new NotImplementedException();
-	}
-
-	public void AsyncSaveChanges()
-	{
-		throw new NotImplementedException();
 	}
 }

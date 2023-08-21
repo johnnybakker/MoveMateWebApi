@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using MoveMateWebApi.Models;
 
+namespace MoveMateWebApi.Models.Data;
+
 public class Session {
 
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity), Required]

@@ -4,6 +4,7 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using MoveMateWebApi.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using MoveMateWebApi.Models.Data;
 
 namespace MoveMateWebApi.Services;
 

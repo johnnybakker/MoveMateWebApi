@@ -1,5 +1,5 @@
 using MoveMateWebApi.Database;
-using MoveMateWebApi.Models;
+using MoveMateWebApi.Models.Data;
 
 namespace MoveMateWebApi.Repositories {
 

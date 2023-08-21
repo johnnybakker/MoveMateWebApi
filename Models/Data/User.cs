@@ -1,10 +1,8 @@
-using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
-namespace MoveMateWebApi.Models;
+namespace MoveMateWebApi.Models.Data;
 
 public class User {
 	
