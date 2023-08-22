@@ -8,6 +8,13 @@ using MoveMateWebApi.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// builder.Services.Configure<JsonOptions>(options =>
+// {
+//     options.SerializerOptions.PropertyNameCaseInsensitive = false;
+//     options.SerializerOptions.PropertyNamingPolicy = null;
+//     options.SerializerOptions.WriteIndented = true;
+// });
+
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();

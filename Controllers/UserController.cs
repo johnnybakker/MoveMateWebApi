@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using MoveMateWebApi.Models.Data;
 using MoveMateWebApi.Models;
 using MoveMateWebApi.Models.Dto;
+using Newtonsoft.Json;
 
 namespace MoveMateWebApi.Controllers;
 

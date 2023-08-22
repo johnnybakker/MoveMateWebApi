@@ -52,8 +52,8 @@ public class UserRepository {
 
 	public IEnumerable<User> Search(string username){
 		return _dbContext.Users
-			.Where(u => u.Name.ToLower().Contains(username.ToLower()))
-			.OrderByDescending(u => u.Name.ToLower().StartsWith(username.ToLower()));
+			.Where(u => u.Username.ToLower().Contains(username.ToLower()))
+			.OrderByDescending(u => u.Username.ToLower().StartsWith(username.ToLower()));
 	}
 	
 	public async Task<SignUpResult> SignUp(SignUpRequest request) {
@@ -63,16 +63,16 @@ public class UserRepository {
 		result.IsStrongPassword = request.Password.IsStrongPassword();
 
 		var users = _dbContext.Users
-			.Where(u => u.Email == request.Email || u.Name == request.Username)
+			.Where(u => u.Email == request.Email || u.Username == request.Username)
 			.ToList();
 
-		result.UserNameAlreadyExists = users.Where(u => u.Name == request.Username).Count() > 0;
+		result.UserNameAlreadyExists = users.Where(u => u.Username == request.Username).Count() > 0;
 		result.EmailAlreadyExists = users.Where(u => u.Email == request.Email).Count() > 0;
 
 		if(result.IsValid) 
 		{
 			await _dbContext.Users.AddAsync(new() {
-				Name = request.Username,
+				Username = request.Username,
 				Email = request.Email,
 				Password = request.Password.ToSHA256HashedString()
 			});
@@ -87,8 +87,12 @@ public class UserRepository {
 		var session = await _sessionRepository.RefreshSession(oldSession);
 		if(session == null) return null;
 
+		// Load user from session
+		await _dbContext.Entry(session).Reference(e => e.User).LoadAsync();
+
 		LoginResult loginResult = new LoginResult {
-			Username = session.User.Name,
+			Id = session.User.Id,
+			Username = session.User.Username,
 			Email = session.User.Email,
 			Token = await _tokenService.Create(session)
 		};
@@ -111,7 +115,8 @@ public class UserRepository {
 		if(session == null) return null;
 
 		LoginResult loginResult = new LoginResult {
-			Username = user.Name,
+			Id = user.Id,
+			Username = user.Username,
 			Email = user.Email,
 			Token = await _tokenService.Create(session)
 		};

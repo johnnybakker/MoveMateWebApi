@@ -10,7 +10,7 @@ public class User {
 	public int Id { get; set; } = default;
 	
 	[MaxLength(100), Required]
-	public string Name { get; set; } = default!;
+	public string Username { get; set; } = default!;
 	
 	[MaxLength(255), Required]
 	public string Email { get; set; } = default!;

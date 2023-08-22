@@ -21,6 +21,8 @@ public class MoveMateDbContext : DbContext
 	{
 		var connectionString = _configuration.GetConnectionString("DefaultConnection");
 		builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+
+		
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
