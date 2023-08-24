@@ -29,6 +29,11 @@ public class UserRepository {
 			.Include(u => u.Sessions);
 	}
 
+	public async Task<User?> Get(int id) 
+	{
+		return await _dbContext.Users.FindAsync(id);
+	}
+
 	async public Task<bool> Subscribe(int subscriberId, int subscriptionId)
 	{
 		var subscriber = await _dbContext.Users.FindAsync(subscriberId);
@@ -83,24 +88,7 @@ public class UserRepository {
 		return result;
 	}
 
-	public async Task<LoginResult?> LoginUsingSession(Session oldSession) {
-		var session = await _sessionRepository.RefreshSession(oldSession);
-		if(session == null) return null;
-
-		// Load user from session
-		await _dbContext.Entry(session).Reference(e => e.User).LoadAsync();
-
-		LoginResult loginResult = new LoginResult {
-			Id = session.User.Id,
-			Username = session.User.Username,
-			Email = session.User.Email,
-			Token = await _tokenService.Create(session)
-		};
-
-		return loginResult;
-	}
-
-	public async Task<LoginResult?> LoginUsingRequest(LoginRequest request) {
+	public async Task<LoginResult?> Login(LoginRequest request) {
 		string email = request.Email ?? "";
 		string password = request.Password ?? "";
 		string hashedPassword = password.ToSHA256HashedString();
@@ -111,7 +99,7 @@ public class UserRepository {
 
 		if(user == null) return null;
 		
-		var session = await _sessionRepository.NewSession(user.Id);
+		var session = await _sessionRepository.New(user.Id, TimeSpan.FromHours(1));
 		if(session == null) return null;
 
 		LoginResult loginResult = new LoginResult {

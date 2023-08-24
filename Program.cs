@@ -20,6 +20,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<FireBaseService>();
 builder.Services.AddSingleton<ITokenFactory, JwtTokenFactory>();
 builder.Services.AddDbContext<MoveMateDbContext>();
 builder.Services.AddScoped<SessionRepository>();

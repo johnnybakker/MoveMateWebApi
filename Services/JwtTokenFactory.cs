@@ -18,7 +18,6 @@ public class JwtTokenFactory : ITokenFactory
 		var key = config.GetJwtPrivateKey();
         var ssKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var credentials = new SigningCredentials(ssKey, SecurityAlgorithms.HmacSha256);
-        
 		_header = new JwtHeader(credentials);
 		_issuer = config.GetJwtIssuer();
     }
@@ -30,7 +29,7 @@ public class JwtTokenFactory : ITokenFactory
 			new(nameof(Session.UserId), session.UserId.ToString())
 		};
 
-        var payload = new JwtPayload(_issuer, _issuer, claims, null, null);
+        var payload = new JwtPayload(_issuer, _issuer, claims, null, session.ExpirationDate);
         var token = new JwtSecurityToken(_header, payload);
 		var handler = new JwtSecurityTokenHandler();
 

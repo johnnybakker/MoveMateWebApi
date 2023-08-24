@@ -19,9 +19,20 @@ public class UserController : ApiController
 		_repository = userRepository;
     }
 
-    [HttpGet]
-    public ApiResult Get() {
-		return ApiResult.Success(_repository.GetAll());
+    // [HttpGet]
+    // public ApiResult Get() {
+	// 	return ApiResult.Success(_repository.GetAll());
+	// }
+
+	[HttpGet("{id}")]
+    public async Task<ApiResult> Get(int id) {
+		if(CurrentSession.UserId != id)
+			throw new UnauthorizedAccessException();
+
+		User? user = await _repository.Get(id);
+		if(user == null) return ApiResult.Failed();
+		
+		return ApiResult.Success(user);
 	}
 
 	[HttpPost("[action]")]
@@ -47,18 +58,9 @@ public class UserController : ApiController
 	}
 
 	[HttpPost("[action]"), AllowAnonymous]
-	public async Task<ApiResult> Login(LoginRequest? request)
+	public async Task<ApiResult> Login(LoginRequest request)
 	{
-		LoginResult? result;
-
-		if(request != null) {
-			result = await _repository.LoginUsingRequest(request);
-		} else if(CurrentSession != null) {
-			result = await _repository.LoginUsingSession(CurrentSession);
-		} else {
-			result = null;
-		}
-
+		LoginResult? result = await _repository.Login(request);
 		return result == null ? ApiResult.Failed() : ApiResult.Success(result);
 	}
 }

@@ -42,7 +42,7 @@ public class MoveMateDbContext : DbContext
 			.OnDelete(DeleteBehavior.Cascade);
 
 		modelBuilder.Entity<Session>()
-			.HasQueryFilter(e => e.Expired == false)
+			.HasQueryFilter(e => e.ExpirationDate > DateTime.UtcNow)
 			.HasOne(e => e.User)
 			.WithMany(e => e.Sessions)
 			.HasForeignKey(e => e.UserId)

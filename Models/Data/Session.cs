@@ -19,5 +19,9 @@ public class Session {
 	public int UserId { get; set; } = default!;
 
 	[Required]
-	public bool Expired { get; set; } = false;
+	public DateTime ExpirationDate { get; set; } = default;
+
+	public string? Token { get; set; } = null;
+	public string? FirebaseToken {get; set; } = null; 
+
 }

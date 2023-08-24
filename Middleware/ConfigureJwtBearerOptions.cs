@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using MoveMateWebApi.Models.Data;
 using MoveMateWebApi.Repositories;
 
@@ -34,7 +35,7 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
 		options.TokenValidationParameters = new() {
 			ValidateIssuerSigningKey = true,
 			ValidateAudience = true,
-			ValidateLifetime = false,
+			ValidateLifetime = true,
 			IssuerSigningKey = ssKey,
 			ValidIssuer = _config.GetJwtIssuer(),
 			ValidAudience = _config.GetJwtIssuer(),
@@ -53,13 +54,33 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
 	private async Task<bool> AttachSession(TokenValidatedContext context) {		
 		if(context.Principal == null) return false;
 		
+		string? token =  context.HttpContext.Request.Headers[HeaderNames.Authorization];
+		if(token == null) return false;
+		token = token.Replace("Bearer", "").Trim();
+
 		var sessionId = GetSessionId(context.Principal) ?? -1;
+		if(sessionId == -1) return false;
+
 		var userId = GetUserId(context.Principal) ?? -1;
-		
+		if(userId == -1) return false;
+
+			
 		using (var scope = _provider.CreateScope()) {
+			
 			SessionRepository repository = scope.ServiceProvider.GetRequiredService<SessionRepository>();
-			Session? session  = await repository.GetSession(sessionId, userId);
+			
+			Session? session  = await repository.Get(sessionId);
+			
 			if(session == null) return false;
+			
+			Console.WriteLine(session.UserId);
+			Console.WriteLine(userId);
+			Console.WriteLine(session.Token);
+			Console.WriteLine(token);
+
+			if(session.UserId != userId) return false;
+			if(session.Token != token) return false;
+			
 			context.HttpContext.Items["Session"] = session;
 		}
 		
