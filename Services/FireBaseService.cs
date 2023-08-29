@@ -10,9 +10,9 @@ public class FireBaseService {
 
 	protected readonly FirebaseApp app;
 
-	public FireBaseService() {
+	public FireBaseService(IConfiguration configuration) {
 
-		string path = @"C:\Users\Johnny\Downloads\movemate-630a7-firebase-adminsdk-4niho-d3ed8e3b69.json";
+		string path = configuration["Firebase:CredentialFile"]!;
 
 		var options = new AppOptions {
 			ServiceAccountId = "firebase-adminsdk-4niho@movemate-630a7.iam.gserviceaccount.com",
