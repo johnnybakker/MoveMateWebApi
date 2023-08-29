@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoveMateWebApi.Database;
 
@@ -10,9 +11,11 @@ using MoveMateWebApi.Database;
 namespace MoveMateWebApi.Migrations
 {
     [DbContext(typeof(MoveMateDbContext))]
-    partial class MoveMateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230829093353_workout_1")]
+    partial class workout_1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,7 +130,7 @@ namespace MoveMateWebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("EndDate")
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("StartDate")
@@ -168,7 +171,7 @@ namespace MoveMateWebApi.Migrations
 
                     b.HasIndex("WorkoutId");
 
-                    b.ToTable("WorkoutData");
+                    b.ToTable("WorkoutDatas");
                 });
 
             modelBuilder.Entity("MoveMateWebApi.Models.Data.Session", b =>

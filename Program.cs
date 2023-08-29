@@ -22,9 +22,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<FireBaseService>();
 builder.Services.AddSingleton<ITokenFactory, JwtTokenFactory>();
+
 builder.Services.AddDbContext<MoveMateDbContext>();
+
 builder.Services.AddScoped<SessionRepository>();
+builder.Services.AddScoped<WorkoutRepository>();
 builder.Services.AddScoped<UserRepository>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.ConfigureOptions<ConfigureJwtBearerOptions>();
 

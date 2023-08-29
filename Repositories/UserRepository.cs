@@ -34,15 +34,44 @@ public class UserRepository {
 		return await _dbContext.Users.FindAsync(id);
 	}
 
+	public async Task<IEnumerable<int>> GetSubscriptions(int id) {
+		return await _dbContext.Subscriptions
+			.Where(e => e.UserId == id)
+			.Select(e => e.ToUserId)
+			.ToListAsync();
+	}
+
+	public async Task<IEnumerable<int>> GetSubscribers(int id) {
+		return await _dbContext.Subscriptions
+			.Where(e => e.ToUserId == id)
+			.Select(e => e.UserId)
+			.ToListAsync();
+	}
+
+	public async Task<IEnumerable<string>> GetSubscriberFirebaseTokens(int id) {
+		IEnumerable<int> subscribers = await GetSubscribers(id);
+		if(subscribers.Count() == 0) {
+			Console.WriteLine($"Subscriber count for {id} is 0");
+			return new List<string>();
+		}
+		return await _dbContext.Sessions
+			.Where(e => subscribers.Contains(e.UserId) && !string.IsNullOrEmpty(e.FirebaseToken))
+			.Select(s => s.FirebaseToken!)
+			.ToListAsync();
+	}
+
 	async public Task<bool> Subscribe(int subscriberId, int subscriptionId)
 	{
+		if(await GetBySubscriberAndSubscription(subscriberId, subscriptionId) != null) 
+			return true;
+
 		var subscriber = await _dbContext.Users.FindAsync(subscriberId);
 		if(subscriber == null) return false;
 
 		var subscription = await _dbContext.Users.FindAsync(subscriptionId);
 		if(subscription == null) return false;
 
-		await _dbContext.Subscription.AddAsync(
+		await _dbContext.Subscriptions.AddAsync(
 			new() {
 				IsFavorite = false,
 				User = subscriber,
@@ -54,9 +83,26 @@ public class UserRepository {
 		return true;
 	}
 
+	async public Task<Subscription?> GetBySubscriberAndSubscription(int subscriberId, int subscriptionId) {
+		var result = await _dbContext.Subscriptions.FirstOrDefaultAsync(e => e.UserId == subscriberId && e.ToUserId == subscriptionId);
+		return result;
+	}
+
+	async public Task<bool> UnSubscribe(int subscriberId, int subscriptionId)
+	{
+		var result = await GetBySubscriberAndSubscription(subscriberId, subscriptionId);	
+		if(result == null) return true;
+
+		_dbContext.Remove(result);
+		await _dbContext.SaveChangesAsync();
+
+		return true;
+	}
 
 	public IEnumerable<User> Search(string username){
 		return _dbContext.Users
+			.Include(x => x.Subscribers)
+			.Include(x => x.Subscriptions)
 			.Where(u => u.Username.ToLower().Contains(username.ToLower()))
 			.OrderByDescending(u => u.Username.ToLower().StartsWith(username.ToLower()));
 	}
@@ -106,7 +152,9 @@ public class UserRepository {
 			Id = user.Id,
 			Username = user.Username,
 			Email = user.Email,
-			Token = await _tokenService.Create(session)
+			Token = await _tokenService.Create(session),
+			Subscribers = await GetSubscribers(user.Id),
+			Subscriptions = await GetSubscriptions(user.Id)
 		};
 
 		return loginResult;

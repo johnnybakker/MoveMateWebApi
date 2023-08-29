@@ -36,4 +36,9 @@ public class User {
 	[JsonPropertyName("sessions")]
 	public ICollection<int> SessionIds => Sessions.Select(x => x.Id).ToList();
 
+	[Required, JsonIgnore]	
+	public List<Workout> Workouts { get; } = new List<Workout>();
+
+	[JsonPropertyName("workouts")]
+	public ICollection<int> WorkoutIds => Workouts.Select(x => x.Id).ToList();
 }

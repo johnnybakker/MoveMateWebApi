@@ -67,21 +67,20 @@ public class ConfigureJwtBearerOptions : IConfigureNamedOptions<JwtBearerOptions
 			
 		using (var scope = _provider.CreateScope()) {
 			
-			SessionRepository repository = scope.ServiceProvider.GetRequiredService<SessionRepository>();
-			
-			Session? session  = await repository.Get(sessionId);
-			
+			SessionRepository sessionRepository = scope.ServiceProvider.GetRequiredService<SessionRepository>();		
+			Session? session  = await sessionRepository.Get(sessionId);
+		
 			if(session == null) return false;
-			
-			Console.WriteLine(session.UserId);
-			Console.WriteLine(userId);
-			Console.WriteLine(session.Token);
-			Console.WriteLine(token);
-
 			if(session.UserId != userId) return false;
 			if(session.Token != token) return false;
-			
+
+			UserRepository userRepository = scope.ServiceProvider.GetRequiredService<UserRepository>();
+			User? user  = await userRepository.Get(session.UserId);
+			if(user == null) return false;
+
+			session.User = user;
 			context.HttpContext.Items["Session"] = session;
+			context.HttpContext.Items["SessionUser"] = user;
 		}
 		
 		return true;

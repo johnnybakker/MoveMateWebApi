@@ -5,4 +5,6 @@ public class LoginResult {
 	public string Username { get; set; } = "";
 	public string Email { get; set; } = "";
 	public string Token { get; set; } = "";
+	public IEnumerable<int> Subscribers { get; set; } = default!;
+	public IEnumerable<int> Subscriptions { get; set; } = default!;
 }

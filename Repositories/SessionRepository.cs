@@ -64,7 +64,6 @@ namespace MoveMateWebApi.Repositories {
 
 		public async Task<Session?> Get(int id) 
 		{
-			Console.WriteLine(id);
 			return await _context.Sessions.FindAsync(id);
 		}
 

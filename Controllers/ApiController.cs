@@ -8,4 +8,5 @@ using MoveMateWebApi.Models.Data;
 public abstract class ApiController : ControllerBase
 {
 	public Session CurrentSession => (Session)HttpContext.Items["Session"]!;
+	public Session CurrentUser => (Session)HttpContext.Items["SessionUser"]!;
 }
