@@ -19,10 +19,10 @@ public class UserController : ApiController
 		_repository = userRepository;
     }
 
-    // [HttpGet]
-    // public ApiResult Get() {
-	// 	return ApiResult.Success(_repository.GetAll());
-	// }
+    [HttpGet]
+    public ApiResult Get() {
+		return ApiResult.Success(_repository.GetAll());
+	}
 
 	[HttpGet("{id}")]
     public async Task<ApiResult> Get(int id) {

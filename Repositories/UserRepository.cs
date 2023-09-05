@@ -25,8 +25,7 @@ public class UserRepository {
 	{
 		return _dbContext.Users
 			.Include(u => u.Subscribers)
-			.Include(u => u.Subscriptions)
-			.Include(u => u.Sessions);
+			.Include(u => u.Subscriptions);
 	}
 
 	public async Task<User?> Get(int id) 
