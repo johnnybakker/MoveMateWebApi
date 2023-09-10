@@ -1,5 +1,8 @@
 @startuml Class diagram MoveMateApi
 
+	skinparam linetype polyline
+	skinparam linetype ortho
+
 	namespace MoveMate {
 
 		namespace Database {
@@ -14,8 +17,12 @@
 			class SessionRepository
 			class UserRepository
 			class WorkoutRepository
-		}
 
+			Repository <|-- UserRepository
+			Repository <|-- WorkoutRepository
+			Repository <|-- SessionRepository
+		}
+		
 		namespace Controllers {
 
 			class ApiController {
@@ -26,20 +33,32 @@
 			class SessionController
 			class UserController
 			class WorkoutController
+
+			ApiController <|-- SessionController
+			ApiController <|-- UserController
+			ApiController <|-- WorkoutController
 		}
 
 		namespace Models {
 
 			namespace Api {
 
+				class ApiResult {
+					+Type: ApiResultType
+					+Date: object
+				}
 
+				enum ApiResultType {
+					Success = 0
+					Failed = 1
+				}
 
+				ApiResult --* ApiResultType
 			}
 
 			namespace Data {
 
 				class Session {
-					+Id: int
 					+Token: string
 					+FirebaseToken: string
 					+User: User
@@ -48,7 +67,6 @@
 				}
 
 				class Subscription {
-					+Id: int
 					+User: User
 					+UserId: int
 					+ToUser: User
@@ -57,7 +75,6 @@
 				}
 
 				class User {		
-					+Id: int
 					+Username: string
 					+Email: string
 					+Password: string
@@ -67,8 +84,25 @@
 					+Workouts: List<Workout> 
 				}
 
-				class Workout {
+				User --|> Entity
+				Session --|> Entity
+				Subscription --|> Entity
+
+
+				Session --* User 
+				User *-- Subscription
+				Workout --* User
+
+				abstract Entity {
 					+Id: int
+				}
+
+				class EnumEntity<T: Enum> {
+					+Name: string,
+					+Value: T
+				}
+
+				class Workout {
 					+User: User
 					+UserId: int
 					+StartDate: DateTime
@@ -78,33 +112,48 @@
 					+TypeId: int
 				}
 				
-				class WorkoutData
-				class EnumEntity
+				class WorkoutData {
+					+Workout: Workout
+					+WorkoutId: int
+					+Time: long
+					+Data: JsonObject
+				}
 
-				enum WorkoutType
+				enum WorkoutType {
+					RUNNING = 1,
+					WALKING = 2
+				}
 
-				Subscription --* User
-				Workout --* User
+				Workout --* WorkoutType 
+				Entity <|-- EnumEntity
+				Entity <|-- Workout
+				Entity <|-- WorkoutData
+	
+
+		
+				Workout --* EnumEntity
 				WorkoutData --* Workout
-				User --* Session
+
+
 
 			}
 
 		}
-
 	}
 
-	MoveMate.Controllers.ApiController <|-- MoveMate.Controllers.SessionController
-	MoveMate.Controllers.ApiController <|-- MoveMate.Controllers.UserController
-	MoveMate.Controllers.ApiController <|-- MoveMate.Controllers.WorkoutController
+	MoveMate.Repositories.Repository --* MoveMate.Database.MoveMateDbContext 
+	MoveMate.Controllers.ApiController ..> MoveMate.Models.Api.ApiResult
+	MoveMate.Controllers.ApiController ..> MoveMate.Models.Data.Entity
+	MoveMate.Repositories.Repository ..> MoveMate.Models.Data.Entity
+	MoveMate.Database.MoveMateDbContext ..> MoveMate.Models.Data.Entity
 
+	' MoveMate.Database.MoveMateDbContext ..> MoveMate.Models.Data.User
+	' MoveMate.Database.MoveMateDbContext ..> MoveMate.Models.Data.Session
+	' MoveMate.Database.MoveMateDbContext ..> MoveMate.Models.Data.Subscription
+	' MoveMate.Database.MoveMateDbContext ..> MoveMate.Models.Data.Workout
+	' MoveMate.Database.MoveMateDbContext ..> MoveMate.Models.Data.WorkoutData
+	' MoveMate.Database.MoveMateDbContext ..> MoveMate.Models.Data.EnumEntity
 
-	MoveMate.Database.MoveMateDbContext *-- MoveMate.Repositories.Repository
-	MoveMate.Repositories.Repository <|-- MoveMate.Repositories.UserRepository
-	MoveMate.Repositories.Repository <|-- MoveMate.Repositories.WorkoutRepository
-	MoveMate.Repositories.Repository <|-- MoveMate.Repositories.SessionRepository
-
-
-
+	' MoveMate.Repositories.UserRepository ..> MoveMate.Models.Data.User
 
 @enduml
