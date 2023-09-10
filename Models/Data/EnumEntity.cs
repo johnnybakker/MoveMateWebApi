@@ -1,14 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
-[PrimaryKey(nameof(Id))]
-public class EnumEntity<T> where T: struct, Enum {
+namespace MoveMateWebApi.Models.Data;
 
-	[DatabaseGenerated(DatabaseGeneratedOption.Identity), Required]
-	public int Id { get; set; } = default!;
+[JsonConverter(typeof(EntityConverter))]
+public class EnumEntity<T> : Entity where T: struct, Enum {
 
 	[Required]
 	public string Name { get; set; } = string.Empty;
@@ -16,8 +15,11 @@ public class EnumEntity<T> where T: struct, Enum {
 	[IgnoreDataMember]
 	public T Value => Enum.GetValues<T>().First(e => (int)(object)e == Id);
 
+	public static EnumEntity<T> GetEntity(T value) {
+		return Entities.First(e => e.Value.CompareTo(value) == 0);
+	}
 
-	public static IEnumerable<EnumEntity<T>> Data => Enum.GetValues<T>().Select(e => new EnumEntity<T> {
+	public static readonly IEnumerable<EnumEntity<T>> Entities = Enum.GetValues<T>().Select(e => new EnumEntity<T> {
 		Id = Convert.ToInt32(e),
 		Name = Enum.GetName(e)!,
 	});

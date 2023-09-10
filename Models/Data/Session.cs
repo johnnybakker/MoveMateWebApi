@@ -7,21 +7,16 @@ using MoveMateWebApi.Models;
 
 namespace MoveMateWebApi.Models.Data;
 
-public class Session {
+[JsonConverter(typeof(EntityConverter))]
+public class Session : Entity {
 
-	[DatabaseGenerated(DatabaseGeneratedOption.Identity), Required]
-	public int Id { get; set; } = default!;
-	
-	[Required]
-	public User User { get; set; } = null!;
+	[Required] 
+	public virtual User User { get; set; } = null!;
+	public int UserId { get; set; }
 
-	[Required]
-	public int UserId { get; set; } = default!;
-
-	[Required]
+	[Required] 
 	public DateTime ExpirationDate { get; set; } = default;
 
 	public string? Token { get; set; } = null;
 	public string? FirebaseToken {get; set; } = null; 
-
 }

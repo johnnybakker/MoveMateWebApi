@@ -11,15 +11,18 @@ using MoveMateWebApi.Database;
 namespace MoveMateWebApi.Migrations
 {
     [DbContext(typeof(MoveMateDbContext))]
-    [Migration("20230829093521_workout_2")]
-    partial class workout_2
+    [Migration("20230909142324_workout_table")]
+    partial class workout_table
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity(".EnumEntity<MoveMateWebApi.Models.Data.WorkoutType>", b =>
@@ -130,7 +133,7 @@ namespace MoveMateWebApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("EndDate")
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<DateTime>("StartDate")

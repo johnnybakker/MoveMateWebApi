@@ -1,24 +1,18 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MoveMateWebApi.Models.Data;
 
-public class Subscription {
+[JsonConverter(typeof(EntityConverter))]
+public class Subscription : Entity {
 	
-	[DatabaseGenerated(DatabaseGeneratedOption.Identity), Required]
-	public int Id { get; set; } = default;
+	[Required]
+	public virtual User User { get; set; } = null!;
+	public int UserId { get; set; }
 
 	[Required]
-	public User User { get; set; } = null!;
-
-	[Required]
-	public int UserId { get; set; } = default;
-
-	[Required]
-	public User ToUser { get; set; } = null!;
-	[Required]
-	public int ToUserId { get; set; } = default;
-
+	public virtual User ToUser { get; set; } = null!;
+	public int ToUserId { get; set; }
 
 	[Required]
 	public bool IsFavorite { get; set; } = false;

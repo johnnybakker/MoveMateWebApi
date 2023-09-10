@@ -21,7 +21,7 @@ public class SessionController : ApiController
 
 	[HttpGet("{userId}/[action]")]
 	public async Task<ApiResult> Refresh(int userId) {
-		if(CurrentSession?.UserId != userId) 
+		if(CurrentUser.Id != userId) 
 			return ApiResult.Failed();
 
 		string? token = await _repository.Refresh(CurrentSession.Id, TimeSpan.FromHours(1));
@@ -35,7 +35,7 @@ public class SessionController : ApiController
 	[HttpPost("{userId}/[action]")]
 	public async Task<ApiResult> FirebaseToken (int userId, JsonObject json) {
 		
-		if(CurrentSession.UserId != userId) 
+		if(CurrentUser.Id != userId) 
 			return ApiResult.Failed();
 
 		string? token = json["token"]?.ToString();

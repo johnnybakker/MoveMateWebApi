@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MoveMateWebApi.Migrations
 {
     /// <inheritdoc />
-    public partial class workout : Migration
+    public partial class workout_table : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -68,8 +68,8 @@ namespace MoveMateWebApi.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    TypeEntityId = table.Column<int>(type: "int", nullable: false)
+                    EndDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
+                    TypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -81,8 +81,8 @@ namespace MoveMateWebApi.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Workouts_WorkoutTypes_TypeEntityId",
-                        column: x => x.TypeEntityId,
+                        name: "FK_Workouts_WorkoutTypes_TypeId",
+                        column: x => x.TypeId,
                         principalTable: "WorkoutTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -90,7 +90,7 @@ namespace MoveMateWebApi.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "WorkoutDatas",
+                name: "WorkoutData",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -102,9 +102,9 @@ namespace MoveMateWebApi.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkoutDatas", x => x.Id);
+                    table.PrimaryKey("PK_WorkoutData", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkoutDatas_Workouts_WorkoutId",
+                        name: "FK_WorkoutData_Workouts_WorkoutId",
                         column: x => x.WorkoutId,
                         principalTable: "Workouts",
                         principalColumn: "Id",
@@ -122,14 +122,14 @@ namespace MoveMateWebApi.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkoutDatas_WorkoutId",
-                table: "WorkoutDatas",
+                name: "IX_WorkoutData_WorkoutId",
+                table: "WorkoutData",
                 column: "WorkoutId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Workouts_TypeEntityId",
+                name: "IX_Workouts_TypeId",
                 table: "Workouts",
-                column: "TypeEntityId");
+                column: "TypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workouts_UserId",
@@ -165,7 +165,7 @@ namespace MoveMateWebApi.Migrations
                 table: "Subscriptions");
 
             migrationBuilder.DropTable(
-                name: "WorkoutDatas");
+                name: "WorkoutData");
 
             migrationBuilder.DropTable(
                 name: "Workouts");

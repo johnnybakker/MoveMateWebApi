@@ -1,8 +1,8 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Microsoft.EntityFrameworkCore;
 using MoveMateWebApi.Models.Data;
 using MoveMateWebApi.Repositories;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace MoveMateWebApi.Database;
 
@@ -24,19 +24,20 @@ public class MoveMateDbContext : DbContext
 	protected override void OnConfiguring(DbContextOptionsBuilder builder)
 	{
 		var connectionString = _configuration.GetConnectionString("DefaultConnection");
-		builder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
-
-		
+		builder
+			.EnableThreadSafetyChecks()
+			.UseLazyLoadingProxies(true)
+			.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
 		modelBuilder.Entity<EnumEntity<WorkoutType>>()
-			.HasData(EnumEntity<WorkoutType>.Data);
+			.HasData(EnumEntity<WorkoutType>.Entities);
 
 		modelBuilder.Entity<WorkoutData>().Property(x => x.Data).HasConversion(
-        	v => JsonConvert.SerializeObject(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore }),
-            v => JsonConvert.DeserializeObject<JObject>(v, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore })!
+        	v => JsonSerializer.Serialize<JsonObject>(v, JsonSerializerOptions.Default),
+            v => JsonSerializer.Deserialize<JsonObject>(v, JsonSerializerOptions.Default)!
 		);
 
 		modelBuilder.Entity<Workout>()
@@ -48,6 +49,7 @@ public class MoveMateDbContext : DbContext
 		modelBuilder.Entity<Workout>()
 			.HasOne(e => e.TypeEntity)
 			.WithMany()
+			.HasForeignKey(e =>e.TypeId)
 			.OnDelete(DeleteBehavior.Cascade);
 
 		modelBuilder.Entity<Workout>()
@@ -59,7 +61,7 @@ public class MoveMateDbContext : DbContext
 		modelBuilder.Entity<Subscription>()
 			.HasOne(u=> u.User)
 			.WithMany(e => e.Subscriptions)
-			.HasForeignKey(e => e.UserId)
+			.HasForeignKey(u=>u.UserId)
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Cascade);
 
@@ -74,7 +76,7 @@ public class MoveMateDbContext : DbContext
 			.HasQueryFilter(e => e.ExpirationDate > DateTime.UtcNow)
 			.HasOne(e => e.User)
 			.WithMany(e => e.Sessions)
-			.HasForeignKey(e => e.UserId)
+			.HasForeignKey(e=>e.UserId)
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Cascade);
 	}

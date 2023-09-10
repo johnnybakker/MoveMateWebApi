@@ -5,13 +5,11 @@ using MoveMateWebApi.Services;
 
 namespace MoveMateWebApi.Repositories {
 
-	public class SessionRepository 
+	public class SessionRepository : Repository
 	{
-		private readonly MoveMateDbContext _context;
 		private readonly ITokenFactory _tokenFactory;
 
-		public SessionRepository(MoveMateDbContext context, ITokenFactory tokenFactory) {
-			_context = context;
+		public SessionRepository(MoveMateDbContext context, ITokenFactory tokenFactory) : base(context) {
 			_tokenFactory = tokenFactory;
 		}
 
@@ -79,7 +77,7 @@ namespace MoveMateWebApi.Repositories {
 
 		public async Task<ICollection<Session>> GetByUserId(int userId) 
 		{
-			return await _context.Sessions.Where(e => e.UserId == userId).ToListAsync();
+			return await _context.Sessions.Where(e => e.User.Id == userId).ToListAsync();
 		}
 
 		public async Task Expire(int id) 

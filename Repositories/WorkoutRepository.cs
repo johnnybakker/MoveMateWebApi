@@ -5,13 +5,11 @@ using MoveMateWebApi.Services;
 
 namespace MoveMateWebApi.Repositories {
 
-	public class WorkoutRepository 
+	public class WorkoutRepository : Repository 
 	{
-		private readonly MoveMateDbContext _context;
 		private readonly FireBaseService _firebase;
 
-		public WorkoutRepository(MoveMateDbContext context, FireBaseService firebase) {
-			_context = context;
+		public WorkoutRepository(MoveMateDbContext context, FireBaseService firebase) : base(context) {
 			_firebase = firebase;
 		}
 
@@ -45,7 +43,7 @@ namespace MoveMateWebApi.Repositories {
 				.LoadAsync();
  
 			return await _context.Workouts
-				.Where(w => w.UserId == id || user.SubscriptionIds.Contains(w.UserId))
+				.Where(w => w.UserId == id)
 				.ToListAsync();
 		} 
 	}

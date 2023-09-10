@@ -26,7 +26,7 @@ public class UserController : ApiController
 
 	[HttpGet("{id}")]
     public async Task<ApiResult> Get(int id) {
-		if(CurrentSession.UserId != id)
+		if(CurrentUser.Id != id)
 			throw new UnauthorizedAccessException();
 
 		User? user = await _repository.Get(id);
@@ -45,7 +45,7 @@ public class UserController : ApiController
 
 	[HttpGet("{id}/[action]")]
     public async Task<ApiResult> Subscribers(int id) {
-		if(CurrentSession.UserId != id)
+		if(CurrentUser.Id != id)
 			throw new UnauthorizedAccessException();
 
 		var subscribers = await _repository.GetSubscribers(id);
@@ -55,7 +55,7 @@ public class UserController : ApiController
 
 	[HttpGet("{id}/[action]")]
     public async Task<ApiResult> Subscriptions(int id) {
-		if(CurrentSession.UserId != id)
+		if(CurrentUser.Id != id)
 			throw new UnauthorizedAccessException();
 
 		var subscriptions = await _repository.GetSubscriptions(id);
@@ -66,9 +66,10 @@ public class UserController : ApiController
 	[HttpPost("{id}/[action]")]
     async public Task<ApiResult> Subscribe(int id, JsonObject body)
     {
-		if(CurrentSession.UserId != id)
+		if(CurrentUser.Id != id)
 			throw new UnauthorizedAccessException();
-		int subscriberId = CurrentSession?.UserId ?? -1;
+
+		int subscriberId = CurrentUser.Id;
 		int subscriptionId = body["id"]?.GetValue<int>() ?? -1;
 		bool result = await _repository.Subscribe(subscriberId, subscriptionId);
 
@@ -78,10 +79,10 @@ public class UserController : ApiController
 	[HttpPost("{id}/[action]")]
     async public Task<ApiResult> UnSubscribe(int id, JsonObject body)
     {
-		if(CurrentSession.UserId != id)
+		if(CurrentUser.Id != id)
 			throw new UnauthorizedAccessException();
 
-		int subscriberId = CurrentSession?.UserId ?? -1;
+		int subscriberId = CurrentUser.Id;
 		int subscriptionId = body["id"]?.GetValue<int>() ?? -1;
 		bool result = await _repository.UnSubscribe(subscriberId, subscriptionId);
 

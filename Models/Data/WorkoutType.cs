@@ -14,3 +14,9 @@ public enum WorkoutType {
 	RUNNING = 1,
 	WALKING = 2
 }
+
+public static class WorkoutTypeExtensions {
+	public static EnumEntity<WorkoutType> ToEntity(this WorkoutType value) {
+		return EnumEntity<WorkoutType>.GetEntity(value);
+	} 
+}

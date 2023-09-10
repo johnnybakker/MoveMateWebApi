@@ -2,26 +2,23 @@ using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using MoveMateWebApi.Models;
-using Newtonsoft.Json.Linq;
-
 namespace MoveMateWebApi.Models.Data;
 
-public class WorkoutData {
-
-	[DatabaseGenerated(DatabaseGeneratedOption.Identity), Required]
-	public int Id { get; set; } = default!;
-	
-	[Required]
-	public Workout Workout { get; set; } = null!;
+[JsonConverter(typeof(EntityConverter))]
+public class WorkoutData : Entity {
 
 	[Required]
-	public int WorkoutId { get; set; } = default!;
+	public virtual Workout Workout { get; set; } = null!;
+	public int WorkoutId { get; set; }
 
 	[Required]
 	public long Time { get; set; } = default;
 
 	[Required]
-	public JObject Data { get; set; } = new JObject();
+	public JsonObject Data { get; set; } = new();
+	
 }

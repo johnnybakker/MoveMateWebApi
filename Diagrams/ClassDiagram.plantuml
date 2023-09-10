@@ -1,0 +1,110 @@
+@startuml Class diagram MoveMateApi
+
+	namespace MoveMate {
+
+		namespace Database {
+			class MoveMateDbContext
+		}
+		
+		namespace Repositories {
+			abstract Repository {
+				#_constext: MoveMateDbContext
+			}
+
+			class SessionRepository
+			class UserRepository
+			class WorkoutRepository
+		}
+
+		namespace Controllers {
+
+			class ApiController {
+				+CurrentSession: Session
+				+CurrentUser: User
+			}
+
+			class SessionController
+			class UserController
+			class WorkoutController
+		}
+
+		namespace Models {
+
+			namespace Api {
+
+
+
+			}
+
+			namespace Data {
+
+				class Session {
+					+Id: int
+					+Token: string
+					+FirebaseToken: string
+					+User: User
+					+UserId: int
+					+ExpireDate: DateTime
+				}
+
+				class Subscription {
+					+Id: int
+					+User: User
+					+UserId: int
+					+ToUser: User
+					+ToUserId: int
+					+IsFavorite: bool
+				}
+
+				class User {		
+					+Id: int
+					+Username: string
+					+Email: string
+					+Password: string
+					+Subscriptions: List<Subscription>
+				 	+Subscribers: List<Subscription>
+					+Sessions: List<Session>
+					+Workouts: List<Workout> 
+				}
+
+				class Workout {
+					+Id: int
+					+User: User
+					+UserId: int
+					+StartDate: DateTime
+					+EndDate: DateTime?
+					+Data: List<WorkoutData>
+					+TypeEntity: EnumEntity<WorkoutType>
+					+TypeId: int
+				}
+				
+				class WorkoutData
+				class EnumEntity
+
+				enum WorkoutType
+
+				Subscription --* User
+				Workout --* User
+				WorkoutData --* Workout
+				User --* Session
+
+			}
+
+		}
+
+	}
+
+	MoveMate.Controllers.ApiController <|-- MoveMate.Controllers.SessionController
+	MoveMate.Controllers.ApiController <|-- MoveMate.Controllers.UserController
+	MoveMate.Controllers.ApiController <|-- MoveMate.Controllers.WorkoutController
+
+
+	MoveMate.Database.MoveMateDbContext *-- MoveMate.Repositories.Repository
+	MoveMate.Repositories.Repository <|-- MoveMate.Repositories.UserRepository
+	MoveMate.Repositories.Repository <|-- MoveMate.Repositories.WorkoutRepository
+	MoveMate.Repositories.Repository <|-- MoveMate.Repositories.SessionRepository
+
+
+
+
+@enduml

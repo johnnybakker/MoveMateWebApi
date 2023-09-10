@@ -36,7 +36,7 @@ public class WorkoutController : ApiController {
 
 		if(workoutType == null) return ApiResult.Failed();
 
-		Workout? workout = await _workoutRepository.Create(CurrentSession.UserId, (WorkoutType)workoutType);
+		Workout? workout = await _workoutRepository.Create(CurrentUser.Id, (WorkoutType)workoutType);
 
 		if(workout == null) return ApiResult.Failed();
 
