@@ -1,0 +1,55 @@
+@startuml Class Diagram Repositories
+
+	title MoveMate - Class Diagram - Repositories
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+
+	namespace Repositories {
+		abstract Repository {
+			#_context: MoveMateDbContext
+		}
+
+		class SessionRepository {
+			+Refresh(int id, TimeSpan duration): string?
+			+SetFirebaseToken(int id, string? token)
+			+New(int userId, TimeSpan duration) : Session?
+			+Get(int id): Session?
+			+GetAll(): ICollection<Session>
+			+GetAllWithFirebaseToken(): ICollection<Session>
+			+GetByUserId(int userId): Session?
+			+Expire(int id) 
+		}
+
+		class UserRepository {
+			+GetAll(): IEnumerable<User>
+			+Get(int id): User?
+			+GetSubscriptions(int id): IEnumerable<int>
+			+GetSubscribers(int id): IEnumerable<int>
+			+GetSubscriberFirebaseTokens(int id): IEnumerable<string>
+			+Subscribe(int subscriberId, int subscriptionId): bool
+			+GetBySubscriberAndSubscription(int subscriberId, int subscriptionId): Subscription?
+			+UnSubscribe(int subscriberId, int subscriptionId): bool
+			+Search(string username): IEnumerable<User>
+			+SignUp(SignUpRequest request): SignUpResult
+			+Login(LoginRequest request): LoginResult
+		}
+
+		class WorkoutRepository {
+			+Create(int userId, WorkoutType workoutType) : Workout?
+			+Get(int id): Workout?
+			+GetByUserId(int id): IEnumerable<Workout>
+		}
+
+		Repository <|-- UserRepository
+		Repository <|-- WorkoutRepository
+		Repository <|-- SessionRepository
+	}
+		
+	Repositories.Repository ---* Database.MoveMateDbContext
+	Repositories.UserRepository --* Services.ITokenFactory
+
+	namespace Database {
+		class MoveMateDbContext
+	}
+
+@enduml

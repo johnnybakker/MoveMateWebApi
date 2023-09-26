@@ -1,0 +1,71 @@
+@startuml Sequence Diagram Workout
+
+	title MoveMate - Sequence Diagram - Workout
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+	actor User
+	participant App
+	participant WorkoutService
+	participant WebApi
+	database Database
+	participant Firebase
+	actor Subscribers
+
+	User -> App: Start workout
+	activate App
+	
+	App -> WorkoutService : Start workout
+	activate WorkoutService
+
+	WorkoutService -> WebApi: Start workout request
+	activate WebApi
+	WebApi -> Database : New workout entry
+	activate Database
+	WebApi <- Database : workout entry
+	deactivate Database
+	WebApi -> Database : get subscribers
+	activate Database
+	Database -> WebApi : subscribers
+	deactivate Database
+
+	WebApi -> Firebase : Send notification to subscribers
+	activate Firebase
+	Firebase -> Subscribers : notifiy
+	activate Subscribers
+	Subscribers -> Firebase
+	deactivate Subscribers
+	deactivate Firebase
+	WebApi -> WorkoutService: Workout started
+	deactivate WebApi
+	WorkoutService -> App: Workout started
+	App -> User: Notify workout started
+	WorkoutService -> WorkoutService: Track workout
+	activate WorkoutService
+	
+	loop until workout stop
+		WorkoutService -> App: Progress
+		App -> User: View progress
+		deactivate App
+	end 
+	deactivate WorkoutService
+
+	User -> App: Stop workout
+	activate App
+	
+	App -> WorkoutService : Stop workout
+	activate WorkoutService
+
+	WorkoutService -> WebApi: Stop workout request
+	activate WebApi
+	WebApi -> Database : Update workout
+	activate Database
+	WebApi <- Database
+	deactivate Database
+	WebApi -> WorkoutService
+	WorkoutService -> WorkoutService : Stop self
+	deactivate WorkoutService
+	WorkoutService -> App
+	App -> User
+	deactivate WorkoutService
+
+@enduml

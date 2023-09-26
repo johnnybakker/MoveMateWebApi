@@ -1,0 +1,67 @@
+@startuml MoveMate - Entity Relation Diagram
+
+skinparam linetype polyline
+skinparam linetype ortho
+
+title MoveMate - Entity Relation Diagram
+footer Last modified 26-09-2023 by Johnny Bakker
+
+entity "Users" as Users {
+  *Id : number <<generated>>
+  --
+  Username : varchar(100)
+  Email : varchar(255)
+  Password : varchar(64)
+}
+
+
+entity "Sessions" as Sessions {
+  *Id : number <<generated>>
+  --
+  UserId : number <<FK>>
+  ExpirationDate : datetime
+  FirebaseToken : text
+  Token : text
+}
+
+entity "Subscriptions" as Subscriptions {
+  *Id : number <<generated>>
+  --
+  UserId : number <<FK>>
+  ToUserId : number <<FK>>
+  IsFavorite : tinyint
+}
+
+entity "Workouts" as Workouts {
+	*Id : number <<generated>>
+	--
+	UserId : number <<FK>>
+	StartDate : datetime
+	EndDate : datetime <<NULLABLE>>
+	TypeId : number <<FK>>
+}
+
+
+entity "WorkoutData" as WorkoutData {
+  *Id : number <<generated>>
+  --
+  WorkoutId : number <<FK>>
+  Time : bigint
+  Data : text
+}
+
+entity "WorkoutTypes" as WorkoutTypes {
+  *Id : number <<generated>>
+  --
+  Name : text
+}
+
+
+Users ||-left-o{ Sessions
+Users ||-right-o{ Workouts
+Users ||-down-o{ Subscriptions
+Users ||-down-o{ Subscriptions  
+Workouts ||-down-o{ WorkoutData
+Workouts }o-right-|| WorkoutTypes
+
+@enduml

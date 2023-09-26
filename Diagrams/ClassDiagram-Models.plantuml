@@ -1,0 +1,122 @@
+@startuml Class Diagram - Models
+
+
+	title MoveMate - Class Diagram - Models
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+
+	namespace Models {
+
+		namespace Api {
+
+			class ApiResult {
+				+Type: ApiResultType
+				+Date: object
+			}
+
+			enum ApiResultType {
+				Success = 0
+				Failed = 1
+			}
+
+			ApiResult --* ApiResultType
+		}
+
+		namespace Data {
+
+			class Session {
+				+Token: string
+				+FirebaseToken: string
+				+User: User
+				+UserId: int
+				+ExpireDate: DateTime
+			}
+
+			class Subscription {
+				+User: User
+				+UserId: int
+				+ToUser: User
+				+ToUserId: int
+				+IsFavorite: bool
+			}
+
+			class User {		
+				+Username: string
+				+Email: string
+				+Password: string
+				+Subscriptions: List<Subscription>
+				+Subscribers: List<Subscription>
+				+Sessions: List<Session>
+				+Workouts: List<Workout> 
+			}
+
+			User --|> Entity
+			Session --|> Entity
+			Subscription --|> Entity
+
+
+			Session --* User 
+			User *-- Subscription
+			Workout --* User
+
+			abstract Entity {
+				+Id: int
+			}
+
+			class EnumEntity<T: Enum> {
+				+Name: string,
+				+Value: T
+			}
+
+			class Workout {
+				+User: User
+				+UserId: int
+				+StartDate: DateTime
+				+EndDate: DateTime?
+				+Data: List<WorkoutData>
+				+TypeEntity: EnumEntity<WorkoutType>
+				+TypeId: int
+			}
+			
+			class WorkoutData {
+				+Workout: Workout
+				+WorkoutId: int
+				+Time: long
+				+Data: JsonObject
+			}
+
+			enum WorkoutType {
+				RUNNING = 1,
+				WALKING = 2
+			}
+
+			Workout --* WorkoutType 
+			Entity <|-- EnumEntity
+			Entity <|-- Workout
+			Entity <|-- WorkoutData
+
+
+	
+			Workout --* EnumEntity
+			WorkoutData --* Workout
+
+
+
+		}
+
+
+	}
+
+	namespace Controllers {
+		abstract ApiController
+	}
+
+	Models.Api.ApiResult <.. Controllers.ApiController 
+
+	namespace Database {
+		class MoveMateDbContext
+	}
+
+	Database.MoveMateDbContext ..> Models.Data.Entity
+
+@enduml

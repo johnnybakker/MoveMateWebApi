@@ -1,0 +1,34 @@
+@startuml MoveMate - UseCase Diagram
+
+	title MoveMate - UseCase Diagram
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+
+
+	"Unauthorized user" as u1
+	u1 --> (Login)
+	u1 --> (Register)
+
+	"Authorized user" as u2
+	u2 --> (Start workout)
+	u2 --> (Stop workout)
+	(Start workout) ..> (Send notification) : <<Include>>
+	(Start workout) ..> (View workout duration) : <<Include>>
+	(Start workout) ..> (View workout distance) : <<Include>>
+	(Start workout) ..> (View workout speed) : <<Include>>
+
+	"Subscriber" as u3
+	u3 --> (View users)
+	(View users) ..> (Subscribe) : <<Include>>
+	(Send notification) ..> (Receive notification) : <<Include>>
+	u3 --> (Receive notification)
+
+	u2 --> u3	
+	User --> u1 
+	User --> u2
+
+	User --> (Change color scheme)
+	(Change color scheme) ..> (Switch to dark mode) : <<Include>>
+	(Change color scheme) ..> (Switch to light mode) : <<Include>>
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml Class Diagram Extensions
+
+	title MoveMate - Class Diagram - Extensions
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+	namespace Extensions {
+		class JwtIConfigurationExtensions {
+			+{static} GetJwtPrivateKey(this IConfiguration config): string
+			+{static} GetJwtIssuer(this IConfiguration config): string
+		}
+
+		class StringHashExtensions {
+			+{static} ToSHA256HashedString(this string str): string
+		}
+
+		class StringValidationExtensions {
+			+{static} IsValidEmailAddress(this string str): bool
+			+{static} ContainsLowerCaseCharacters(this string str, int amount = 1): bool
+			+{static} ContainsUpperCaseCharacters(this string str, int amount = 1): bool
+			+{static} ContainsNumberCharacters(this string str, int amount = 1): bool
+			+{static} ContainsSpecialCharacters(this string str, int amount = 1): bool
+			+{static} IsStrongPassword(this string str): bool
+		}
+	}
+
+
+@enduml
