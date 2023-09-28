@@ -1,0 +1,131 @@
+@startuml ActivityWireframe
+scale 1
+
+skinparam Linetype ortho
+
+(*) -down-> "
+{{
+salt
+{^ Login screen
+	.
+	.
+	.
+	.
+	<size:20>WELCOME</size>
+	.
+	"Email                   "
+	"Password                "
+	[           Login        ]
+	..or..
+	[           Sign Up      ]
+	.
+	.
+}
+
+}}
+" as Login
+
+Login -left-> "
+{{
+salt
+{^Sign up screen
+	.
+	.
+	<size:20>SIGN UP
+	"Username                "
+	"Email                   "
+	"Password                "
+	<back:grey>[                                                                ]
+	"Repeat password         "
+	[           Sign Up       ]
+	..or..
+	[           Login         ]
+	.
+	.
+} 
+}}
+" as SignUp
+
+SignUp -right-> Login 
+
+Login -down-> "
+{{
+salt
+{^ Start screen
+	.
+	.
+	<size:20>WORKOUT</size>
+	.
+	<&timer> 00:00:00
+	<&media-play> 0.0 KM
+	<&media-play> 0.0 KM/H
+	.
+	[ START WOKROUT <&media-play>]
+	.
+	.
+	.
+	.
+}
+}}
+" as StartWorkout
+
+
+StartWorkout -up-> ===B1===
+===B1=== -up-> Login
+
+StartWorkout -right-> "
+{{
+salt
+{^ Stop screen
+	. | . | .
+	. | . | .
+	. | <size:20>WORKOUT</size>
+	. | .
+	. | <&timer> 12:34:46
+	. | <&media-play> 1.2 KM
+	. | <&media-play> 3.4 KM/H
+	. | .
+	. | [ STOP WOKROUT <&media-stop>]
+	. | .
+	. | .
+	. | .
+	. | .
+}
+}}
+" as StopWorkout
+
+StopWorkout -left-> StartWorkout
+StopWorkout -up-> ===B1===
+
+StartWorkout -down-> "
+{{
+salt
+{^ Search screen
+	.
+	{
+		. | "Search      " | * | .
+		. | User 1  |.| [<size:8>Follow  </size>]
+		. | User 2  |.| [<size:8>UnFollow</size>]
+		. | User 3  |.| [<size:8>Follow  </size>]
+		. | User 4  |.| [<size:8>UnFollow</size>]
+		. | User 5  |.| [<size:8>Follow  </size>]
+	}
+	.
+	.
+	.
+}
+}}
+" as Search
+
+Search -up-> ===B1===
+
+Search --> if "Workout started?" then
+	-right-> [yes] StopWorkout
+else
+	-left->[no] StartWorkout
+endif
+
+StopWorkout --> Search
+
+
+@enduml
