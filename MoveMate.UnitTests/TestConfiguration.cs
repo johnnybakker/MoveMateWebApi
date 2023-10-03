@@ -38,12 +38,12 @@ namespace MoveMate.UnitTests
 
         public IChangeToken GetReloadToken()
         {
-            return default(IChangeToken);
+            return default(IChangeToken)!;
         }
 
         public IConfigurationSection GetSection(string key)
         {
-            return null;
+            return null!;
         }
     }
 }
