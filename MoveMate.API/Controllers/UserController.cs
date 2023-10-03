@@ -1,36 +1,36 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Nodes;
-using MoveMate.Repositories;
+using MoveMate.API.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using MoveMate.Models.Data;
 using MoveMate.Models;
 using MoveMate.Models.Dto;
-using Newtonsoft.Json;
-
 namespace MoveMate.Controllers;
 
 
 public class UserController : ApiController
 {
-	protected readonly UserRepository _repository;
+	protected readonly IUserRepository _repository;
 	
-    public UserController(UserRepository userRepository)
+    public UserController(IUserRepository userRepository)
     {
 		_repository = userRepository;
     }
 
     [HttpGet]
-    public ApiResult Get() {
-		return ApiResult.Success(_repository.GetAll());
+    public async Task<ApiResult> Get() {
+		return ApiResult.Success(await _repository.GetAll());
 	}
 
 	[HttpGet("{id}")]
-    public async Task<ApiResult> Get(int id) {
+    public async Task<ApiResult> Login(int id) {
 		if(CurrentUser.Id != id)
 			throw new UnauthorizedAccessException();
 
 		User? user = await _repository.Get(id);
+		
 		if(user == null) return ApiResult.Failed();
+		
 		var result = new LoginResult() {
 			Email = user.Email,
 			Id = user.Id,
@@ -91,8 +91,8 @@ public class UserController : ApiController
 
 
 	[HttpGet("[action]"), AllowAnonymous]
-    public ApiResult Search([FromQuery(Name = "username")] string username){
-		return ApiResult.Success(_repository.Search(username));
+    public async Task<ApiResult> Search([FromQuery(Name = "username")] string username){
+		return ApiResult.Success(await _repository.Search(username));
     }
 	
 	[HttpPost("[action]"), AllowAnonymous]

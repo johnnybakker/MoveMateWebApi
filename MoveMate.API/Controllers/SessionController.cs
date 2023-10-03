@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json.Nodes;
-using MoveMate.Repositories;
+using MoveMate.API.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using MoveMate.Models.Data;
 using MoveMate.Models;
@@ -12,9 +12,9 @@ namespace MoveMate.Controllers;
 
 public class SessionController : ApiController
 {
-	protected readonly SessionRepository _repository;
+	protected readonly ISessionRepository _repository;
 	
-    public SessionController(SessionRepository userRepository)
+    public SessionController(ISessionRepository userRepository)
     {
 		_repository = userRepository;
     }

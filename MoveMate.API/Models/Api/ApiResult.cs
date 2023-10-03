@@ -12,5 +12,19 @@ public class ApiResult {
 	public static ApiResult Success() => From(ApiResultType.Success);
 	public static ApiResult Failed() => From(ApiResultType.Failed);
 	public static ApiResult From(ApiResultType type) => new ApiResult { Type = type, Data = null };
+
+	public bool Unpack<T>(out T? o)
+	{
+		try
+		{
+			o = (T?)Convert.ChangeType(Data, typeof(T));
+			return true;
+		} 
+		catch
+		{
+			o = default;
+			return false;
+		}
+	}
 }
 

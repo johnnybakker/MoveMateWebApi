@@ -1,16 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using MoveMate.Database;
+using MoveMate.API.Database;
 using MoveMate.Models.Data;
-using MoveMate.Services;
+using MoveMate.API.Services;
 
-namespace MoveMate.Repositories {
+namespace MoveMate.API.Repositories {
 
-	public class WorkoutRepository : Repository 
+	public class WorkoutRepository : Repository, IWorkoutRepository
 	{
-		private readonly FireBaseService _firebase;
-
-		public WorkoutRepository(MoveMateDbContext context, FireBaseService firebase) : base(context) {
-			_firebase = firebase;
+		public WorkoutRepository(IMoveMateDbContext context) : base(context) {
+	
 		}
 
 		public async Task<Workout?> Create(int userId, WorkoutType workoutType) 
@@ -30,17 +28,13 @@ namespace MoveMate.Repositories {
 		}
 
 		public async Task<Workout?> Get(int id) {
-			return await _context.Workouts.FindAsync(id);
+			return await _context.Workouts.FirstOrDefaultAsync(w => w.Id == id);
 		} 
 
 		public async Task<IEnumerable<Workout>> GetByUserId(int id) {
-			User? user= await _context.Users.FindAsync(id);
+			User? user= await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 			
 			if(user==null) return new List<Workout>();
-			
-			await _context.Entry(user)
-				.Reference(e => e.Subscriptions)
-				.LoadAsync();
  
 			return await _context.Workouts
 				.Where(w => w.UserId == id)

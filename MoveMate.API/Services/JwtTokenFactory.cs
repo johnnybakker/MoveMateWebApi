@@ -2,11 +2,9 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
-using MoveMate.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MoveMate.Models.Data;
 
-namespace MoveMate.Services;
+namespace MoveMate.API.Services;
 
 public class JwtTokenFactory : ITokenFactory
 {
@@ -22,7 +20,7 @@ public class JwtTokenFactory : ITokenFactory
 		_issuer = config.GetJwtIssuer();
     }
 
-	public Task<string> Create(Session session)
+    public Task<string> Create(Session session)
 	{
 		var claims = new List<Claim>() {
 			new(nameof(Session.Id), session.Id.ToString()),

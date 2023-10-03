@@ -2,11 +2,11 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.EntityFrameworkCore;
 using MoveMate.Models.Data;
-using MoveMate.Repositories;
+using MoveMate.API.Repositories;
 
-namespace MoveMate.Database;
+namespace MoveMate.API.Database;
 
-public class MoveMateDbContext : DbContext
+public class MoveMateDbContext : DbContext, IMoveMateDbContext
 {
 	private readonly IConfiguration _configuration;
 	public virtual DbSet<User> Users { get; set; }
@@ -16,7 +16,7 @@ public class MoveMateDbContext : DbContext
 	public virtual DbSet<WorkoutData> WorkoutData { get; set; }
 	public virtual DbSet<EnumEntity<WorkoutType>> WorkoutTypes { get; set; }
 
-    public MoveMateDbContext(IConfiguration configuration, DbContextOptions<MoveMateDbContext> options) : base(options)
+    public MoveMateDbContext(IConfiguration configuration) : base()
     {
 		_configuration = configuration;
     }
@@ -80,4 +80,14 @@ public class MoveMateDbContext : DbContext
 			.IsRequired()
 			.OnDelete(DeleteBehavior.Cascade);
 	}
+
+    public Task<int> SaveChangesAsync()
+    {
+		return base.SaveChangesAsync();
+    }
+
+    void IMoveMateDbContext.Remove<TEntity>(TEntity entity)
+    {
+		base.Remove(entity);
+    }
 }

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using MoveMate.Models.Data;
-using MoveMate.Repositories;
+using MoveMate.API.Repositories;
 
 namespace MoveMate.Middleware;
 

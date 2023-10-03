@@ -1,31 +1,31 @@
 using Microsoft.EntityFrameworkCore;
-using MoveMate.Database;
+using MoveMate.API.Database;
 using MoveMate.Models.Data;
 using MoveMate.Models.Dto;
-using MoveMate.Services;
+using MoveMate.API.Services;
 
-namespace MoveMate.Repositories;
+namespace MoveMate.API.Repositories;
 
 
 
-public class UserRepository : Repository 
+public class UserRepository : Repository, IUserRepository 
 {
 	private readonly ITokenFactory _tokenService;
-	private readonly SessionRepository _sessionRepository;
+	private readonly ISessionRepository _sessionRepository;
 
-	public UserRepository(MoveMateDbContext context, ITokenFactory tokenService, SessionRepository sessionRepository) : base(context) {
+	public UserRepository(IMoveMateDbContext context, ITokenFactory tokenService, ISessionRepository sessionRepository) : base(context) {
 		_tokenService = tokenService;
 		_sessionRepository = sessionRepository;
 	}
 
-	public IEnumerable<User> GetAll()
+	public async Task<IEnumerable<User>> GetAll()
 	{
-		return _context.Users.ToList();
+		return await _context.Users.ToListAsync();
 	}
 
 	public async Task<User?> Get(int id) 
 	{
-		return await _context.Users.FindAsync(id);
+		return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 	}
 
 	public async Task<IEnumerable<int>> GetSubscriptions(int id) {
@@ -59,10 +59,10 @@ public class UserRepository : Repository
 		if(await GetBySubscriberAndSubscription(subscriberId, subscriptionId) != null) 
 			return true;
 
-		var subscriber = await _context.Users.FindAsync(subscriberId);
+		var subscriber = await _context.Users.FirstOrDefaultAsync(s => s.Id == subscriberId);
 		if(subscriber == null) return false;
 
-		var subscription = await _context.Users.FindAsync(subscriptionId);
+		var subscription = await _context.Users.FirstOrDefaultAsync(s => s.Id == subscriptionId);
 		if(subscription == null) return false;
 
 		await _context.Subscriptions.AddAsync(
@@ -93,11 +93,11 @@ public class UserRepository : Repository
 		return true;
 	}
 
-	public IEnumerable<User> Search(string username){
-		return _context.Users
+	public async Task<IEnumerable<User>> Search(string username){
+		return await _context.Users
 			.Where(u => u.Username.ToLower().Contains(username.ToLower()))
 			.OrderByDescending(u => u.Username.ToLower().StartsWith(username.ToLower()))
-			.ToList();
+			.ToListAsync();
 	}
 	
 	public async Task<SignUpResult> SignUp(SignUpRequest request) {

@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
-using MoveMate.Database;
+using MoveMate.API.Database;
 using MoveMate.Models.Data;
-using MoveMate.Services;
+using MoveMate.API.Services;
 
-namespace MoveMate.Repositories {
+namespace MoveMate.API.Repositories {
 
-	public class SessionRepository : Repository
+	public class SessionRepository : Repository, ISessionRepository
 	{
 		private readonly ITokenFactory _tokenFactory;
 
-		public SessionRepository(MoveMateDbContext context, ITokenFactory tokenFactory) : base(context) {
+		public SessionRepository(IMoveMateDbContext context, ITokenFactory tokenFactory) : base(context) {
 			_tokenFactory = tokenFactory;
 		}
 

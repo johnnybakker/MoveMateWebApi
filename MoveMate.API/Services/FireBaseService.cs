@@ -1,10 +1,12 @@
 using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
+using MoveMate.Models.Data;
+using Newtonsoft.Json.Linq;
 
-namespace MoveMate.Services;
+namespace MoveMate.API.Services;
 
-public class FireBaseService {
+public class FireBaseService : INotificationService {
 
 	public FirebaseMessaging messaging => FirebaseMessaging.GetMessaging(app);
 
@@ -26,4 +28,19 @@ public class FireBaseService {
 	public string GetName() {
 		return app.Name;
 	}
+
+    public async Task BroadcastAsync(string title, string body, IEnumerable<string> identifiers)
+    {
+        var message = new MulticastMessage
+        {
+			Notification = new Notification
+			{
+                Title = title,
+				Body = body
+            },
+            Tokens = identifiers.ToList()
+        };
+
+        var _ = await messaging.SendMulticastAsync(message);
+    }
 }
