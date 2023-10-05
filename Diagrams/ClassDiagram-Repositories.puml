@@ -3,13 +3,18 @@
 	title MoveMate - Class Diagram - Repositories
 	footer Last modified 26-09-2023 by Johnny Bakker
 
+	namespace Services {
+		interface ITokenFactory
+		class JwtTokenFactory
+		ITokenFactory <|.. JwtTokenFactory
+	}
 
 	namespace Repositories {
 		abstract Repository {
-			#_context: MoveMateDbContext
+			#_context: IMoveMateDbContext
 		}
 
-		class SessionRepository {
+		interface ISessionRepository {
 			+Refresh(int id, TimeSpan duration): string?
 			+SetFirebaseToken(int id, string? token)
 			+New(int userId, TimeSpan duration) : Session?
@@ -20,7 +25,7 @@
 			+Expire(int id) 
 		}
 
-		class UserRepository {
+		interface IUserRepository {
 			+GetAll(): IEnumerable<User>
 			+Get(int id): User?
 			+GetSubscriptions(int id): IEnumerable<int>
@@ -33,23 +38,35 @@
 			+SignUp(SignUpRequest request): SignUpResult
 			+Login(LoginRequest request): LoginResult
 		}
-
-		class WorkoutRepository {
+		
+		interface IWorkoutRepository {
 			+Create(int userId, WorkoutType workoutType) : Workout?
 			+Get(int id): Workout?
 			+GetByUserId(int id): IEnumerable<Workout>
 		}
 
-		Repository <|-- UserRepository
-		Repository <|-- WorkoutRepository
-		Repository <|-- SessionRepository
+		class SessionRepository
+		class UserRepository
+		class WorkoutRepository
+
+		ISessionRepository <|.. SessionRepository
+		IUserRepository <|.. UserRepository
+		IWorkoutRepository <|.. WorkoutRepository
+
+		UserRepository --|> Repository
+		WorkoutRepository --|> Repository
+		SessionRepository --|> Repository
 	}
+
+
 		
-	Repositories.Repository ---* Database.MoveMateDbContext
-	Repositories.UserRepository --* Services.ITokenFactory
+	Repositories.UserRepository ---* Services.ITokenFactory 
 
 	namespace Database {
+		interface IMoveMateDbContext
 		class MoveMateDbContext
+		IMoveMateDbContext <|.. MoveMateDbContext
 	}
+	Repositories.Repository ---* Database.IMoveMateDbContext
 
 @enduml

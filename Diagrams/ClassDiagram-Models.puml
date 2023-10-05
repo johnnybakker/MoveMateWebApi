@@ -4,7 +4,6 @@
 	title MoveMate - Class Diagram - Models
 	footer Last modified 26-09-2023 by Johnny Bakker
 
-
 	namespace Models {
 
 		namespace Api {
@@ -115,6 +114,9 @@
 
 	namespace Database {
 		class MoveMateDbContext
+		interface IMoveMateDbContext
+
+		IMoveMateDbContext <|.. MoveMateDbContext
 	}
 
 	Database.MoveMateDbContext ..> Models.Data.Entity

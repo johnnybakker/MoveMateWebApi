@@ -4,25 +4,38 @@
 	footer Last modified 26-09-2023 by Johnny Bakker
 
 	namespace Services {
+
 		class FireBaseService {
 			+messaging: FirebaseMessaging
 			#app: FirebaseApp
+			+FireBaseService(config: IConfiguration)
 			+GetName(): string
+			+BroadcastAsync(title: string, body: string, identifiers: IEnumerable<string>): Task
 		}
+
+		interface INotificationService {
+			+{abstract} BroadcastAsync(title: string, body: string, identifiers: IEnumerable<string>): Task
+		}
+
+		INotificationService <|.. FireBaseService
 
 		
 		
 		interface ITokenFactory {
-			+{abstract} Create(Session session): string
+			+{abstract} Create(session: Session): string
 		}
 
 		class JwtTokenFactory {
-			Create(Session session): string
+			-_issuer: string
+    		-_header: JwtHeader
+	
+    		+JwtTokenFactory(config: IConfiguration)
+			+Create(session: Session): string
 		}
 	}
 
 	Services.FireBaseService -[hidden]- Services.ITokenFactory
 
-	Services.ITokenFactory <|-- Services.JwtTokenFactory
+	Services.ITokenFactory <|.. Services.JwtTokenFactory
 	Services.ITokenFactory ..> Models.Data.Session
 @enduml

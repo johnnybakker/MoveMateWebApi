@@ -1,7 +1,9 @@
-@startuml Class Diafram Controllers
+@startuml Class Diagram Controllers
 
 	title MoveMate - Class Diagram - Controllers
 	footer Last modified 26-09-2023 by Johnny Bakker
+
+
 
 	namespace Controllers {
 
@@ -10,29 +12,85 @@
 			+CurrentUser: User
 		}
 
-		class SessionController {
-				+Refresh(int userId): ApiResult
+		class UserController {
+			#_repository: IUserRepository
+			+Get(): Task<ApiResult> 
+			+Login(id: int): Task<ApiResult>  
+			+Subscribers(id: int): Task<ApiResult>
+			+Subscriptions(id: int): Task<ApiResult>
+			+Subscribe(id: int, body: JsonObject): Task<ApiResult>
+			+UnSubscribe(id: int, body: JsonObject): Task<ApiResult>
+			+Search(username: string): Task<ApiResult>
+			+SignUp(request: SignUpRequest): Task<ApiResult>
+			+Login(request: LoginRequest): Task<ApiResult> 
 		}
-		class UserController
-		class WorkoutController
 
-		ApiController <|-- SessionController
-		ApiController <|-- UserController
-		ApiController <|-- WorkoutController
+		class SessionController {
+			#_repository: ISessionRepository
+			+SessionController(userRepository: ISessionRepository)
+			+Refresh(userId: int): Task<ApiResult>
+			+FirebaseToken(userId: int, json: JsonObject): Task<ApiResult>
+		}
+
+		class WorkoutController {
+			-_service: INotificationService
+			-_userRepository: IUserRepository
+			-_workoutRepository: IWorkoutRepository
+			+WorkoutController(service: INotificationService, workoutRepository: IWorkoutRepository, userRepository: IUserRepository)
+			+Create(body: JsonObject): Task<ApiResult>
+			+Get(id: int): Task<ApiResult>
+			+Get(): Task<ApiResult>
+		}
+
+		ApiController <|--- SessionController
+		ApiController <|--- UserController
+		ApiController <|--- WorkoutController
 	}
 
+	namespace Models {
+		namespace Dto {
+			class LoginRequest
+			class SignUpRequest
+		}
+		namespace Api {
+			class ApiResult
+		}
+	}
+
+	
+	Controllers.UserController <.. Models.Dto.LoginRequest
+	Controllers.UserController <.. Models.Dto.SignUpRequest
+
 	namespace Repositories {
+
+		interface ISessionRepository
+		interface IUserRepository
+		interface IWorkoutRepository
+
 		class SessionRepository
 		class UserRepository
 		class WorkoutRepository
+
+
+		ISessionRepository <|.. SessionRepository
+		IUserRepository <|.. UserRepository
+		IWorkoutRepository <|.. WorkoutRepository
 	}
+
+	namespace Services {
+		interface INotificationService
+		class FirebaseService
+		INotificationService <|.. FirebaseService
+	}
+
+	Controllers.ApiController <.. Models.Api.ApiResult 
 		
-	Controllers.ApiController ..> Api.ApiResult
-	Controllers.UserController --* Repositories.UserRepository
-	Controllers.WorkoutController --* Repositories.WorkoutRepository
-	Controllers.WorkoutController --* Repositories.UserRepository
-	Controllers.WorkoutController --* Services.FireBaseService
-	Controllers.SessionController --* Repositories.SessionRepository
+
+	Controllers.UserController --* Repositories.IUserRepository
+	Controllers.WorkoutController --* Repositories.IUserRepository
+	Controllers.WorkoutController --* Repositories.IWorkoutRepository
+	Controllers.WorkoutController --* Services.INotificationService
+	Controllers.SessionController --* Repositories.ISessionRepository
 
 
 @enduml

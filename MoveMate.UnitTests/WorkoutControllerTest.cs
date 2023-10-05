@@ -24,7 +24,7 @@ public class WorkoutControllerTest : ApiControllerTest
 
 		NotificationService = notificationServiceMock.Object;
 	
-        Controller = new WorkoutController(NotificationService, SessionRepository, WorkoutRepository, UserRepository);
+        Controller = new WorkoutController(NotificationService, WorkoutRepository, UserRepository);
         Controller.ControllerContext.HttpContext = HttpContext;
     }
 
