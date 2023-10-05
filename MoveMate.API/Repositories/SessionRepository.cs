@@ -15,7 +15,7 @@ namespace MoveMate.API.Repositories {
 
 		public async Task<string?> Refresh(int id, TimeSpan duration) 
 		{
-			Session? session = await _context.Sessions.FindAsync(id);
+			Session? session = await _context.Sessions.FirstOrDefaultAsync(s => s.Id == id);
 			if(session == null) return null;
 
 			// Add one some time to the session
@@ -31,7 +31,7 @@ namespace MoveMate.API.Repositories {
 
 		public async Task SetFirebaseToken(int id, string? token) 
 		{
-			Session? session = await _context.Sessions.FindAsync(id);
+			Session? session = await _context.Sessions.FirstOrDefaultAsync(s => s.Id == id);
 			if(session == null) return;
 
 			// Add one some time to the session
@@ -62,7 +62,7 @@ namespace MoveMate.API.Repositories {
 
 		public async Task<Session?> Get(int id) 
 		{
-			return await _context.Sessions.FindAsync(id);
+			return await _context.Sessions.FirstOrDefaultAsync(s => s.Id == id);
 		}
 
 		public async Task<ICollection<Session>> GetAll() 
@@ -82,7 +82,7 @@ namespace MoveMate.API.Repositories {
 
 		public async Task Expire(int id) 
 		{
-			Session? session = await _context.Sessions.FindAsync(id);
+			Session? session = await _context.Sessions.FirstOrDefaultAsync(u => u.Id == id);
 			if(session == null) return;
 			session.ExpirationDate = DateTime.UtcNow;
 			session.Token = null;

@@ -20,8 +20,7 @@ public class ApiResult {
 			o = (T?)Convert.ChangeType(Data, typeof(T));
 			return true;
 		} 
-		catch
-		{
+		catch { 
 			o = default;
 			return false;
 		}

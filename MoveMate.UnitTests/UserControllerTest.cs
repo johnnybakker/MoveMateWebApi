@@ -7,17 +7,38 @@ using System.Text.Json.Nodes;
 
 namespace MoveMate.UnitTests;
 
-public class TestUserController : TestBase
+public class UserControllerTest : ApiControllerTest
 {
     UserController Controller;
 
-    public TestUserController() : base()
+    public UserControllerTest() : base()
     {
         Controller = new UserController(UserRepository);
         Controller.ControllerContext.HttpContext = HttpContext;
     }
 
-    [Fact]
+	protected override void ClearTestData()
+	{
+		Users.Clear();
+		Sessions.Clear();
+
+		CurrentSession = null;
+		CurrentUser = null;
+	}
+
+	protected override void SetupTestData()
+	{
+		TestData data = new TestData();
+
+		Users.Add(data.TestUser1);
+		Users.Add(data.TestUser2);
+		Sessions.Add(data.TestSession);
+
+		CurrentUser = Users[0];
+		CurrentSession = Sessions[0];
+	}
+
+	[Fact]
     public async Task TestGetAllUsers()
     {
         ApiResult result = await Controller.Get();

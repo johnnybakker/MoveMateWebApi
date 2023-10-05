@@ -1,32 +1,26 @@
 ﻿using HttpContextMoq;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Moq.EntityFrameworkCore;
 using MoveMate.API.Database;
 using MoveMate.API.Repositories;
 using MoveMate.API.Services;
-using MoveMate.Controllers;
 using MoveMate.Models.Data;
 
-namespace MoveMate.UnitTests
+namespace MoveMate.UnitTests.Helpers
 {
-    public abstract class TestBase
+    public abstract class ApiControllerTest : IDisposable
     {
-        public static List<User> Users = new List<User>()
-        {
-            new User { Id = 1, Username = "Johnny", Email = "johnny@test.nl", Password = "Test123!".ToSHA256HashedString() },
-            new User { Id = 2, Username = "Johnny2", Email = "johnny2@test.nl", Password = "Test123!".ToSHA256HashedString() }
-        };
-
-        public static List<Session> Sessions = new List<Session>();
-        public static List<Subscription> Subscriptions = new List<Subscription>();
-        public static List<Workout> Workouts = new List<Workout>();
-        public static List<WorkoutData> WorkoutData = new List<WorkoutData>();
+        public List<User> Users = new List<User>();
+        public List<Session> Sessions = new List<Session>();
+        public List<Subscription> Subscriptions = new List<Subscription>();
+        public List<Workout> Workouts = new List<Workout>();
+        public List<WorkoutData> WorkoutData = new List<WorkoutData>();
+		public List<EnumEntity<WorkoutType>> WorkoutTypes = new List<EnumEntity<WorkoutType>>();
 
 
         private Mock<MoveMateDbContext> DatabaseMock;
-        public MoveMateDbContext Database => DatabaseMock.Object;
+        private MoveMateDbContext Database => DatabaseMock.Object;
 
         public HttpContextMock HttpContext;
 
@@ -35,24 +29,28 @@ namespace MoveMate.UnitTests
         protected ISessionRepository SessionRepository { get; set; }
         protected ITokenFactory TokenFactory { get; set; }
         protected IConfiguration Configuration { get; set; }
+		
+		protected User? CurrentUser { 
+			get => HttpContext.Items["SessionUser"] as User; 
+			set => HttpContext.Items["SessionUser"] = value; 
+		}
 
-        public TestBase() {
+		protected Session? CurrentSession { 
+			get => HttpContext.Items["Session"] as Session; 
+			set => HttpContext.Items["Session"] = value; 
+		}
+
+        public ApiControllerTest() {
+			
             HttpContext = new HttpContextMock()
             {
-                Items = new Dictionary<object, object> {
-                { "SessionUser", Users[0] },
-                { "Session", new Session()
-                    {
-                        Id = 1,
-                        ExpirationDate = DateTime.UtcNow.AddHours(1),
-                        FirebaseToken = null,
-                        Token = "",
-                        User = Users[0],
-                        UserId = Users[0].Id
-                    }
-                }
-            }
+                Items = new Dictionary<object, object?> {
+					{ "SessionUser", null },
+					{ "Session", null }, 
+            	}
             };
+
+			SetupTestData();
 
             DatabaseMock = new Mock<MoveMateDbContext>(new TestConfiguration());
             DatabaseMock.Setup(x => x.Users).ReturnsDbSet(Users);
@@ -60,12 +58,22 @@ namespace MoveMate.UnitTests
             DatabaseMock.Setup(x => x.Subscriptions).ReturnsDbSet(Subscriptions);
             DatabaseMock.Setup(x => x.Workouts).ReturnsDbSet(Workouts);
             DatabaseMock.Setup(x => x.WorkoutData).ReturnsDbSet(WorkoutData);
+            DatabaseMock.Setup(x => x.WorkoutTypes).ReturnsDbSet(WorkoutTypes);
+
 
             Configuration = new TestConfiguration();
             TokenFactory = new JwtTokenFactory(Configuration);
             SessionRepository = new SessionRepository(Database, TokenFactory);
             UserRepository = new UserRepository(Database, TokenFactory, SessionRepository);
             WorkoutRepository = new WorkoutRepository(Database);
-        }
-    }
+		}
+
+		protected abstract void SetupTestData();
+		protected abstract void ClearTestData();
+
+		public void Dispose()
+		{
+			ClearTestData();
+		}
+	}
 }
