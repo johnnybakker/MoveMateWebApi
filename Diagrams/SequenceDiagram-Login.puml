@@ -1,0 +1,74 @@
+@startuml Sequence Diagram Login
+
+	title MoveMate - Sequence Diagram - Login
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+	actor User
+	participant App
+	participant TokenService
+	database AppStorage
+	participant WebApi
+	database Database
+
+	User -> App: Start application
+	activate App
+	
+	App -> AppStorage : Get token
+	activate AppStorage
+	
+	AppStorage -> App: token
+	deactivate AppStorage
+
+	alt token not null
+
+		App -> WebApi: Login with token
+		activate WebApi
+		WebApi -> Database : Request user info
+		activate Database
+		WebApi <- Database : user info
+		deactivate Database
+		WebApi -> WebApi : Validate login
+		activate WebApi
+		WebApi -> App: Login response with token
+		deactivate WebApi
+		deactivate WebApi
+
+	end
+
+	loop until login success
+		
+		App -> AppStorage: Clear token
+		activate AppStorage
+		App <- AppStorage
+		deactivate AppStorage
+
+		App -> User: Show LoginActivity
+		activate User
+		User -> App: Login with credentials
+		deactivate User
+
+		App -> WebApi: Login with credentials
+		activate WebApi
+		WebApi -> Database : Request user info
+		activate Database
+		WebApi <- Database : user info
+		deactivate Database
+		WebApi -> WebApi : Validate login
+		activate WebApi
+		WebApi -> App: Login response with token
+		deactivate WebApi
+		deactivate WebApi
+
+	end
+
+	App -> AppStorage: StoreToken
+	activate AppStorage
+	App <- AppStorage
+	deactivate AppStorage
+	App -> TokenService: Start token refresh service
+	activate TokenService
+	App -> User: Show MainActivity
+	deactivate App
+
+
+@enduml

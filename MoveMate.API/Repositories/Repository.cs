@@ -1,13 +1,18 @@
 
-using MoveMate.API.Database;
+using MoveMateWebApi.Database;
 
-namespace MoveMate.API.Repositories;
+namespace MoveMateWebApi.Repositories;
 
-public abstract class Repository {			
-	protected readonly IMoveMateDbContext _context;
+public abstract class Repository : IDisposable {			
+	protected readonly MoveMateDbContext _context;
 
-	public Repository(IMoveMateDbContext context) {
+	public Repository(MoveMateDbContext context) {
 		_context = context;
 
+	}
+
+	public void Dispose()
+	{
+		_context.Dispose();
 	}
 }

@@ -1,0 +1,28 @@
+@startuml Class Diagram Services
+
+	title MoveMate - Class Diagram - Services
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+	namespace Services {
+		class FireBaseService {
+			+messaging: FirebaseMessaging
+			#app: FirebaseApp
+			+GetName(): string
+		}
+
+		
+		
+		interface ITokenFactory {
+			+{abstract} Create(Session session): string
+		}
+
+		class JwtTokenFactory {
+			Create(Session session): string
+		}
+	}
+
+	Services.FireBaseService -[hidden]- Services.ITokenFactory
+
+	Services.ITokenFactory <|-- Services.JwtTokenFactory
+	Services.ITokenFactory ..> Models.Data.Session
+@enduml

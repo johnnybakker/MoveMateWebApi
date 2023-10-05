@@ -8,7 +8,7 @@ namespace MoveMate.API.Repositories {
 	public class SessionRepository : Repository, ISessionRepository
 	{
 		private readonly ITokenFactory _tokenFactory;
-
+		
 		public SessionRepository(IMoveMateDbContext context, ITokenFactory tokenFactory) : base(context) {
 			_tokenFactory = tokenFactory;
 		}

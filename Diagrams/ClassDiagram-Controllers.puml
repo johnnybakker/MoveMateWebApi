@@ -1,0 +1,38 @@
+@startuml Class Diafram Controllers
+
+	title MoveMate - Class Diagram - Controllers
+	footer Last modified 26-09-2023 by Johnny Bakker
+
+	namespace Controllers {
+
+		class ApiController {
+			+CurrentSession: Session
+			+CurrentUser: User
+		}
+
+		class SessionController {
+				+Refresh(int userId): ApiResult
+		}
+		class UserController
+		class WorkoutController
+
+		ApiController <|-- SessionController
+		ApiController <|-- UserController
+		ApiController <|-- WorkoutController
+	}
+
+	namespace Repositories {
+		class SessionRepository
+		class UserRepository
+		class WorkoutRepository
+	}
+		
+	Controllers.ApiController ..> Api.ApiResult
+	Controllers.UserController --* Repositories.UserRepository
+	Controllers.WorkoutController --* Repositories.WorkoutRepository
+	Controllers.WorkoutController --* Repositories.UserRepository
+	Controllers.WorkoutController --* Services.FireBaseService
+	Controllers.SessionController --* Repositories.SessionRepository
+
+
+@enduml

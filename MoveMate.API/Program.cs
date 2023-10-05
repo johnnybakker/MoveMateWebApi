@@ -1,4 +1,8 @@
+using System.ComponentModel;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using MoveMate.API.Database;
 using MoveMate.API.Repositories;
@@ -16,7 +20,6 @@ builder.Services.AddSingleton<INotificationService, FireBaseService>();
 builder.Services.AddSingleton<ITokenFactory, JwtTokenFactory>();
 
 builder.Services.AddDbContext<IMoveMateDbContext, MoveMateDbContext>(ServiceLifetime.Scoped);
-
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 builder.Services.AddScoped<IWorkoutRepository, WorkoutRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
