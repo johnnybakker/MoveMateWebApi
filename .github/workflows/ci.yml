@@ -26,7 +26,7 @@ jobs:
           dotnet-version: 7.0.x
 
       - name: Test project
-        run: dotnet test
+        run: dotnet test MoveMate.UnitTests
             
       - name: Publish project
         run: dotnet publish MoveMate.API -c Release -o release --runtime linux-arm64 --self-contained
