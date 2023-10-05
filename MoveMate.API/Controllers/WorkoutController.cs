@@ -14,13 +14,11 @@ namespace MoveMate.Controllers;
 public class WorkoutController : ApiController {
 
 	private readonly INotificationService _service;
-	private readonly ISessionRepository _sessionRepository;
 	private readonly IUserRepository _userRepository;
 	private readonly IWorkoutRepository _workoutRepository;
 
-	public WorkoutController(INotificationService service, ISessionRepository sessionRepository, IWorkoutRepository workoutRepository, IUserRepository userRepository) {
+	public WorkoutController(INotificationService service, IWorkoutRepository workoutRepository, IUserRepository userRepository) {
 		_service = service;
-		_sessionRepository = sessionRepository;
 		_workoutRepository = workoutRepository;
 		_userRepository = userRepository;
 	}
