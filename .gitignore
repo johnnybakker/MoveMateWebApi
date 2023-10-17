@@ -18,3 +18,5 @@
 **/[Ll]ogs/
 
 **/appsettings.*.json
+
+**/out

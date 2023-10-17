@@ -1,0 +1,28 @@
+@startuml DeploymentDiagramMoveMate
+
+	title Deployment diagram MoveMate
+
+	node "Android Phone" as Client {
+		node MoveMateApp
+	}
+
+	cloud FirebaseService
+
+	node Server {
+
+
+		node WebServer
+		node MoveMateWebAPI
+
+		WebServer -- MoveMateWebAPI : " HTTPS Proxy\n :5000"
+
+	}
+
+
+	MoveMateApp -- FirebaseService : "XMPP"
+	MoveMateApp -- WebServer : " HTTPS :443 "
+	MoveMateWebAPI --left-- FirebaseService : " HTTPS"
+
+
+
+@enduml
