@@ -2,8 +2,10 @@
 
 	title Deployment diagram MoveMate
 
+
+
 	node "Android Phone" as Client {
-		node MoveMateApp
+		artifact MoveMateApp <<application>>
 	}
 
 	cloud FirebaseService
@@ -12,16 +14,21 @@
 
 
 		node WebServer
-		node MoveMateWebAPI
+		artifact MoveMateWebAPI <<executable>>
 
-		WebServer -- MoveMateWebAPI : " HTTPS Proxy\n :5000"
+		database MariaDB
+
+		WebServer --down-- MoveMateWebAPI : "  HTTPS Proxy :5000"
+		MoveMateWebAPI --right-- MariaDB
 
 	}
 
 
-	MoveMateApp -- FirebaseService : "XMPP"
-	MoveMateApp -- WebServer : " HTTPS :443 "
-	MoveMateWebAPI --left-- FirebaseService : " HTTPS"
+
+
+	MoveMateApp --down-- FirebaseService : "  XMPP"
+	MoveMateApp --right-- WebServer : "       HTTPS :443            "
+	MoveMateWebAPI --left-- FirebaseService : "             HTTPS       "
 
 
 
