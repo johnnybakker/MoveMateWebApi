@@ -60,13 +60,13 @@
 
 
 		
-	Repositories.UserRepository ---* Services.ITokenFactory 
+	Repositories.UserRepository o--- Services.ITokenFactory 
 
 	namespace Database {
 		interface IMoveMateDbContext
 		class MoveMateDbContext
 		IMoveMateDbContext <|.. MoveMateDbContext
 	}
-	Repositories.Repository ---* Database.IMoveMateDbContext
+	Repositories.Repository o--- Database.IMoveMateDbContext
 
 @enduml

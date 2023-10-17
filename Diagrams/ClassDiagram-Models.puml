@@ -18,7 +18,7 @@
 				Failed = 1
 			}
 
-			ApiResult --* ApiResultType
+			ApiResult *-- ApiResultType
 		}
 
 		namespace Data {
@@ -54,9 +54,9 @@
 			Subscription --|> Entity
 
 
-			Session --* User 
-			User *-- Subscription
-			Workout --* User
+			Session o--* User 
+			User *--o Subscription
+			Workout o--* User
 
 			abstract Entity {
 				+Id: int
@@ -89,15 +89,15 @@
 				WALKING = 2
 			}
 
-			Workout --* WorkoutType 
+			Workout *-- WorkoutType 
 			Entity <|-- EnumEntity
 			Entity <|-- Workout
 			Entity <|-- WorkoutData
 
 
 	
-			Workout --* EnumEntity
-			WorkoutData --* Workout
+			Workout *-- EnumEntity
+			WorkoutData o--* Workout
 
 
 

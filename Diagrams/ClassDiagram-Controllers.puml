@@ -58,8 +58,8 @@
 	}
 
 	
-	Controllers.UserController <.. Models.Dto.LoginRequest
-	Controllers.UserController <.. Models.Dto.SignUpRequest
+	Controllers.UserController ..> Models.Dto.LoginRequest
+	Controllers.UserController ..> Models.Dto.SignUpRequest
 
 	namespace Repositories {
 
@@ -83,14 +83,14 @@
 		INotificationService <|.. FirebaseService
 	}
 
-	Controllers.ApiController <.. Models.Api.ApiResult 
+	Controllers.ApiController ..> Models.Api.ApiResult 
 		
 
-	Controllers.UserController --* Repositories.IUserRepository
-	Controllers.WorkoutController --* Repositories.IUserRepository
-	Controllers.WorkoutController --* Repositories.IWorkoutRepository
-	Controllers.WorkoutController --* Services.INotificationService
-	Controllers.SessionController --* Repositories.ISessionRepository
+	Controllers.UserController o-- Repositories.IUserRepository
+	Controllers.WorkoutController o-- Repositories.IUserRepository
+	Controllers.WorkoutController o-- Repositories.IWorkoutRepository
+	Controllers.WorkoutController o-- Services.INotificationService
+	Controllers.SessionController o-- Repositories.ISessionRepository
 
 
 @enduml
